@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+
+<body>
+
+    <form method="post" th:object="${user}">
+
+        <div>
+            <label th:for="username">Choose Username:</label>
+            <input type="text" th:field="*{username}" />
+            <span th:errors="*{username}"></span>
+        </div>
+
+        <div>
+            <label th:for="password">Choose Password:</label>
+            <input type="password" th:field="*{password}" />
+            <span th:errors="*{password}" />
+        </div>
+
+        <div>
+            <label th:for="verifyPassword">Retype Password:</label>
+            <input type="password" name="verifyPassword" />
+            <span th:text="${verifyPasswordError}" />
+        </div>
+
+        <div>
+            <input type="submit" value="Create User" />
+        </div>
+
+    </form>
+
+</body>
+
+</html>
