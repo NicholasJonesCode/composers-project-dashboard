@@ -1,7 +1,6 @@
 package org.launchcode.projectmanager.Controllers;
 
 
-import org.launchcode.projectmanager.CustomSession;
 import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
@@ -10,13 +9,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Controller
 @RequestMapping("user")
-@SessionAttributes("newUserId")
 @Scope("session")
 public class UserController {
 
@@ -26,6 +28,7 @@ public class UserController {
     // USER CREATION
     @RequestMapping(value = "create-user", method = RequestMethod.GET)
     public String createUser(Model model) {
+
         model.addAttribute(new User());
         return "user/create-user";
     }
@@ -34,7 +37,8 @@ public class UserController {
     public String processCreateUser(@ModelAttribute @Valid User newUser,
                                     Errors errors,
                                     Model model,
-                                    @RequestParam String verifyPassword) {
+                                    @RequestParam String verifyPassword,
+                                    HttpSession session) {
         if (errors.hasErrors()) {
             return "user/create-user";
         }
@@ -50,7 +54,7 @@ public class UserController {
         model.addAttribute("new_user_name", currentUser.getUsername());
 
         //CUSTOM_SESSION ATTRIBUTES UNTIL I FIND SOMETHING FOR MULTI-CONTROLLERS
-        CustomSession.addAttribute("currentUserId", currentUser.getId());
+        session.setAttribute("currentUserId", currentUser.getId());
 
         return "user/success-test";
 
