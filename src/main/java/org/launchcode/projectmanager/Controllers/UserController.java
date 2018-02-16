@@ -1,28 +1,29 @@
 package org.launchcode.projectmanager.Controllers;
 
 
+import org.launchcode.projectmanager.CustomSession;
+import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("")
-public class MainController {
+@RequestMapping("user")
+@SessionAttributes("newUserId")
+@Scope("session")
+public class UserController {
 
     @Autowired
     public UserDao userDao;
 
+    // USER CREATION
     @RequestMapping(value = "create-user", method = RequestMethod.GET)
     public String createUser(Model model) {
         model.addAttribute(new User());
@@ -33,8 +34,7 @@ public class MainController {
     public String processCreateUser(@ModelAttribute @Valid User newUser,
                                     Errors errors,
                                     Model model,
-                                    @RequestParam String verifyPassword,
-                                    HttpSession session) {
+                                    @RequestParam String verifyPassword) {
         if (errors.hasErrors()) {
             return "user/create-user";
         }
@@ -44,11 +44,18 @@ public class MainController {
             return "user/create-user";
         }
 
+        newUser.setPassword(Tools.makeSHA256HashString(newUser.getPassword()));
         userDao.save(newUser);
-        session.setAttribute("currentUserId", newUser.getId());
-        User currentUser = userDao.findOne(((Integer) session.getAttribute("currentUserId")));
+        User currentUser = userDao.findOne(newUser.getId());
         model.addAttribute("new_user_name", currentUser.getUsername());
+
+        //CUSTOM_SESSION ATTRIBUTES UNTIL I FIND SOMETHING FOR MULTI-CONTROLLERS
+        CustomSession.addAttribute("currentUserId", currentUser.getId());
+
         return "user/success-test";
+
+        // USER MANAGEMENT
+
     }
 
 }

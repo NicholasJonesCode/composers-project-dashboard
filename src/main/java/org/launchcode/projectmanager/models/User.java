@@ -13,11 +13,11 @@ public class User {
     private int id;
 
     @NotNull
-    @Size(min=3, max = 25, message = "Must have 3-25 characters")
+    @Size(min=3, max = 25)
     private String username;
 
     @NotNull
-    @Size(min = 6, max = 35, message = "Must have 6-35 characters")
+    @Size(min = 6, max = 256)
     private String password;
 
 
