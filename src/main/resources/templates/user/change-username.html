@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+
+<body>
+
+<h2>Change Username</h2> <br/>
+
+<p>Type in your new name: </p>
+
+<form method="post">
+
+    <input type="text" th:value="${currentUsername}" name="newUsername" />
+
+    <input type="submit" value="Change It"/>
+
+</form>
+
+</body>
+
+</html>

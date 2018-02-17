@@ -43,7 +43,7 @@ public class UserController {
             return "user/create-user";
         }
 
-        if(!verifyPassword.equals(newUser.getPassword())) {
+        if (!verifyPassword.equals(newUser.getPassword())) {
             model.addAttribute("verifyPasswordError", "Passwords don't match");
             return "user/create-user";
         }
@@ -53,13 +53,41 @@ public class UserController {
         User currentUser = userDao.findOne(newUser.getId());
         model.addAttribute("new_user_name", currentUser.getUsername());
 
-        //CUSTOM_SESSION ATTRIBUTES UNTIL I FIND SOMETHING FOR MULTI-CONTROLLERS
+        //session management
+        session.setAttribute("isUserLogged", true);
         session.setAttribute("currentUserId", currentUser.getId());
+        session.setAttribute("currentUsername", currentUser.getUsername());
 
         return "user/success-test";
+    }
 
-        // USER MANAGEMENT
+    // USER MANAGEMENT
+    @RequestMapping(value = "user-profile", method = RequestMethod.GET)
+    public String userProfile(Model model, HttpSession session) {
 
+        model.addAttribute("currentUsername", session.getAttribute("currentUsername"));
+        return "user/profile-settings";
+    }
+
+    @RequestMapping(value = "change-username", method = RequestMethod.GET)
+    public String changeUsername(Model model, HttpSession session) {
+
+        User currentUser = userDao.findOne((Integer) session.getAttribute("currentUserId"));
+        model.addAttribute("currentUsername", currentUser.getUsername());
+
+        return "user/change-username";
+    }
+
+    @RequestMapping(value = "change-username", method = RequestMethod.POST)
+    public String processChangeUsername(@RequestParam String newUsername, Model model, HttpSession session) {
+
+        User currentUser = userDao.findOne((Integer) session.getAttribute("currentUserId"));
+        currentUser.setUsername(newUsername);
+        userDao.save(currentUser);
+
+        session.setAttribute("currentUsername", newUsername);
+
+        return "redirect:user-profile";
     }
 
 }

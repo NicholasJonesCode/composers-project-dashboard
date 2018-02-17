@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+
+<body>
+
+<h2>Composer Profile and Settings</h2>
+
+<p th:text="'Your username is: ' + ${currentUsername}"></p> <span><form method="get" action="/user/change-username"><input type="submit" value="Change Username"/></form></span>
+
+<p th:text="'Your Password: ' + '********' "></p> <span><form method="get" action="/user/change-password"><input type="submit" value="Change Password"/></form></span>
+
+<p><a href="/">Go back to the front page</a></p>
+
+</body>
+
+</html>

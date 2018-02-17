@@ -25,7 +25,7 @@ public class HomeController {
         if (session.getAttribute("currentUserId") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
         } else {
-            model.addAttribute("loggedInUser", "Current User: " + userDao.findOne((Integer) session.getAttribute("currentUserId")).getUsername());
+            model.addAttribute("loggedInUser", "Current User: " + session.getAttribute("currentUsername"));
         }
 
         return "index/welcome";
