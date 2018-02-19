@@ -53,7 +53,7 @@ public class UserController {
         User currentUser = userDao.findOne(newUser.getId());
         model.addAttribute("new_user_name", currentUser.getUsername());
 
-        //session management
+        //SESSION CREATION
         session.setAttribute("isUserLogged", true);
         session.setAttribute("currentUserId", currentUser.getId());
         session.setAttribute("currentUsername", currentUser.getUsername());
@@ -88,6 +88,26 @@ public class UserController {
         session.setAttribute("currentUsername", newUsername);
 
         return "redirect:user-profile";
+    }
+
+    @RequestMapping(value = "delete-user", method = RequestMethod.GET)
+    public String deleteUser() {
+        return "user/delete-user";
+    }
+
+    @RequestMapping(value = "delete-user", method = RequestMethod.POST)
+    public String processDeleteUser(HttpSession session) {
+
+        Integer currentUserId = (Integer) session.getAttribute("currentUserId");
+        User currentUser = userDao.findOne(currentUserId);
+        userDao.delete(currentUser);
+
+        session.setAttribute("isUserLogged", false);
+        session.removeAttribute("currentUserId");
+        session.removeAttribute("currentUsername");
+
+        return "redirect:/";
+
     }
 
 }
