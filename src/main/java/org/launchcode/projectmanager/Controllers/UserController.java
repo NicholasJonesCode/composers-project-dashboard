@@ -23,7 +23,7 @@ import javax.validation.Valid;
 public class UserController {
 
     @Autowired
-    public UserDao userDao;
+    private UserDao userDao;
 
     // USER CREATION
     @RequestMapping(value = "create-user", method = RequestMethod.GET)
@@ -102,12 +102,12 @@ public class UserController {
         User currentUser = userDao.findOne(currentUserId);
         userDao.delete(currentUser);
 
+        //"DELETE SESSION"
         session.setAttribute("isUserLogged", false);
         session.removeAttribute("currentUserId");
         session.removeAttribute("currentUsername");
 
         return "redirect:/";
-
     }
 
 }

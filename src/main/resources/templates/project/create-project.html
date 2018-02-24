@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+
+<h2 th:text="${title}"></h2>
+
+<form method="post" th:object="${project}">
+
+    <!--
+    <div>
+        <label th:for=""></label>
+        <input type="text" th:field="*{}"/>
+        <span th:errors="*{}"> </span>
+    </div>
+    -->
+
+    <div>
+        <label th:for="title">Title: </label>
+        <input type="text" th:field="*{title}"/>
+        <span th:errors="*{title}"> </span>
+    </div>
+
+    <div>
+        <label th:for="primary_music_key">Primary Music Key: </label>
+        <input type="text" th:field="*{primary_music_key}"/>
+        <span th:errors="*{primary_music_key}"> </span>
+    </div>
+
+    <div>
+        <label th:for="genre">Genre: </label>
+        <input type="text" th:field="*{genre}"/>
+        <span th:errors="*{genre}"> </span>
+    </div>
+
+    <div>
+        <label th:for="primary_time_sig">Primary Time Signature: </label>
+        <input type="text" th:field="*{primary_time_sig}"/>
+        <span th:errors="*{primary_time_sig}"> </span>
+    </div>
+
+    <div>
+        <label th:for="starting_tempo">Starting Tempo: </label>
+        <input type="text" th:field="*{starting_tempo}"/>
+        <span th:errors="*{starting_tempo}"> </span>
+    </div>
+
+    <div>
+        <label th:for="notes">Description/Notes: </label>
+        <input type="text" th:field="*{notes}"/>
+        <span th:errors="*{notes}"> </span>
+    </div>
+
+    <div>
+        <label th:for="isPublicPrivate">Make this work: </label>
+        <select name="isPublicPrivate">
+            <option value="private">Private</option>
+            <option value="public">Public</option>
+        </select>
+    </div>
+
+    <input type="submit" value="Add" />
+
+</form>
+
+
+</body>
+
+</html>
