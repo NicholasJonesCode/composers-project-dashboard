@@ -23,7 +23,7 @@ public class HomeController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String welcome(Model model, HttpSession session) {
 
-        if (session.getAttribute("currentUserId") == null) {
+        if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
         } else {
             model.addAttribute("loggedInUser", "Current User: " + ((User) session.getAttribute("currentUserObj")).getUsername());

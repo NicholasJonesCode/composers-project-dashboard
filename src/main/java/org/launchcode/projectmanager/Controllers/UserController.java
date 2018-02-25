@@ -1,6 +1,5 @@
 package org.launchcode.projectmanager.Controllers;
 
-
 import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
@@ -13,10 +12,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("user")
@@ -63,7 +62,6 @@ public class UserController {
         model.addAttribute("new_user_name", currentUser.getUsername());
 
                 //SESSION CREATION
-        session.setAttribute("isUserLogged", true);
         session.setAttribute("currentUserObj", currentUser);
 
         return "user/success-test";
@@ -111,7 +109,6 @@ public class UserController {
         userDao.delete(currentUser);
 
                 //DELETE SESSION
-        session.setAttribute("isUserLogged", false);
         session.removeAttribute("currentUserObj");
 
         return "redirect:/";
@@ -150,7 +147,6 @@ public class UserController {
             return "user/login";
         }
                 //SESSION MANAGEMENT
-        session.setAttribute("isUserLogged", true);
         session.setAttribute("currentUserObj", proposedUser);
 
         model.addAttribute("new_user_name", proposedUser.getUsername());
@@ -158,4 +154,12 @@ public class UserController {
         return "redirect:user-profile";
     }
 
+    @RequestMapping(value = "logout", method = RequestMethod.GET)
+    public String logOut(HttpSession session) {
+
+                //SESSION DELETE
+        session.removeAttribute("currentUserObj");
+
+        return "user/logout-success";
+    }
 }
