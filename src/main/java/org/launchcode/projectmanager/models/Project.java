@@ -14,7 +14,6 @@ public class Project {
     @GeneratedValue
     private int id;
 
-    @NotNull
     @Size(min = 1, max = 500, message = "Title cannot be empty!")
     private String title;
 

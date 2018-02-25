@@ -16,18 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("user")
 @Scope("session")
 public class UserController {
 
+    /*
+    * SECTIONS:
+    * 1. USER CREATION (CreateUser)
+    * 2. USER MANAGEMENT (UserProfile... ChangeUsername... DeleteUser...)
+    * 3. USER LOGIN/LOGOUT (proper methods)
+     */
+
     @Autowired
     private UserDao userDao;
 
+
     // USER CREATION
     @RequestMapping(value = "create-user", method = RequestMethod.GET)
-    public String createUser(Model model) {
+    public String displayCreateUser(Model model) {
 
         model.addAttribute(new User());
         return "user/create-user";
@@ -53,26 +62,25 @@ public class UserController {
         User currentUser = userDao.findOne(newUser.getId());
         model.addAttribute("new_user_name", currentUser.getUsername());
 
-        //SESSION CREATION
+                //SESSION CREATION
         session.setAttribute("isUserLogged", true);
-        session.setAttribute("currentUserId", currentUser.getId());
-        session.setAttribute("currentUsername", currentUser.getUsername());
+        session.setAttribute("currentUserObj", currentUser);
 
         return "user/success-test";
     }
 
     // USER MANAGEMENT
     @RequestMapping(value = "user-profile", method = RequestMethod.GET)
-    public String userProfile(Model model, HttpSession session) {
+    public String displayUserProfile(Model model, HttpSession session) {
 
-        model.addAttribute("currentUsername", session.getAttribute("currentUsername"));
+        model.addAttribute("currentUsername", ((User) session.getAttribute("currentUserObj")).getUsername());
         return "user/profile-settings";
     }
 
     @RequestMapping(value = "change-username", method = RequestMethod.GET)
-    public String changeUsername(Model model, HttpSession session) {
+    public String displayChangeUsername(Model model, HttpSession session) {
 
-        User currentUser = userDao.findOne((Integer) session.getAttribute("currentUserId"));
+        User currentUser = userDao.findOne(((User) session.getAttribute("currentUserObj")).getId());
         model.addAttribute("currentUsername", currentUser.getUsername());
 
         return "user/change-username";
@@ -81,7 +89,7 @@ public class UserController {
     @RequestMapping(value = "change-username", method = RequestMethod.POST)
     public String processChangeUsername(@RequestParam String newUsername, Model model, HttpSession session) {
 
-        User currentUser = userDao.findOne((Integer) session.getAttribute("currentUserId"));
+        User currentUser = userDao.findOne(((User) session.getAttribute("currentUserObj")).getId());
         currentUser.setUsername(newUsername);
         userDao.save(currentUser);
 
@@ -91,23 +99,63 @@ public class UserController {
     }
 
     @RequestMapping(value = "delete-user", method = RequestMethod.GET)
-    public String deleteUser() {
+    public String displayDeleteUser() {
         return "user/delete-user";
     }
 
     @RequestMapping(value = "delete-user", method = RequestMethod.POST)
     public String processDeleteUser(HttpSession session) {
 
-        Integer currentUserId = (Integer) session.getAttribute("currentUserId");
+        Integer currentUserId = ((User) session.getAttribute("currentUserObj")).getId();
         User currentUser = userDao.findOne(currentUserId);
         userDao.delete(currentUser);
 
-        //"DELETE SESSION"
+                //DELETE SESSION
         session.setAttribute("isUserLogged", false);
-        session.removeAttribute("currentUserId");
-        session.removeAttribute("currentUsername");
+        session.removeAttribute("currentUserObj");
 
         return "redirect:/";
+    }
+
+
+    //USER LOGIN/LOGOUT
+    @RequestMapping(value = "login", method = RequestMethod.GET)
+    public String displayLogIn(Model model) {
+
+        model.addAttribute("title", "Log In");
+        return "user/login";
+    }
+
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    public String processLogIn(Model model, @RequestParam String username, @RequestParam String password, HttpSession session) {
+
+        if (username.isEmpty() || password.isEmpty()) {
+            model.addAttribute("title", "Log In");
+            model.addAttribute("usernameError", "Neither field can be empty");
+            model.addAttribute("passwordError", "Neither field can be empty");
+            return "user/login";
+        }
+
+        if (userDao.findByUsername(username).isEmpty()) {
+            model.addAttribute("title", "Log In");
+            model.addAttribute("usernameError", "This user doesn't exist");
+            return "user/login";
+        }
+
+        User proposedUser = userDao.findByUsername(username).get(0);
+
+        if (!Tools.checkPassword(password,proposedUser.getPassword())){
+            model.addAttribute("title", "Log In");
+            model.addAttribute("passwordError", "Incorrect Password");
+            return "user/login";
+        }
+                //SESSION MANAGEMENT
+        session.setAttribute("isUserLogged", true);
+        session.setAttribute("currentUserObj", proposedUser);
+
+        model.addAttribute("new_user_name", proposedUser.getUsername());
+
+        return "redirect:user-profile";
     }
 
 }

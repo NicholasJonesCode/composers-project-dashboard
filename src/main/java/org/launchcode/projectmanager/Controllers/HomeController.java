@@ -1,6 +1,7 @@
 package org.launchcode.projectmanager.Controllers;
 
 
+import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -25,7 +26,7 @@ public class HomeController {
         if (session.getAttribute("currentUserId") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
         } else {
-            model.addAttribute("loggedInUser", "Current User: " + session.getAttribute("currentUsername"));
+            model.addAttribute("loggedInUser", "Current User: " + ((User) session.getAttribute("currentUserObj")).getUsername());
         }
 
         return "index/welcome";

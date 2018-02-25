@@ -16,8 +16,8 @@ public class Tools {
         } return null;
     }
 
-    public boolean checkPassword (String password, String hashedPassword) {
-        if (makeSHA256HashString(password) == hashedPassword) {
+    public static boolean checkPassword (String password, String currentHashedPassword) {
+        if (makeSHA256HashString(password).equals(currentHashedPassword)) {
             return true;
         } return false;
     }

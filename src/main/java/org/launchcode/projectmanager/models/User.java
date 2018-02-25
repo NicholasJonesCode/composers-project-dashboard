@@ -12,12 +12,10 @@ public class User {
     @GeneratedValue
     private int id;
 
-    @NotNull
     @Size(min=3, max = 25)
     @Column(unique = true)
     private String username;
 
-    @NotNull
     @Size(min = 6, max = 256)
     private String password;
 

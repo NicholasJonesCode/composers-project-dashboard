@@ -20,7 +20,7 @@ import javax.validation.Valid;
 public class ProjectsController {
 
     @Autowired
-    UserDao userDao;
+    private UserDao userDao;
 
     @Autowired
     private ProjectDoa projectDoa;
