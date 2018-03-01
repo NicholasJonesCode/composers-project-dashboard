@@ -18,51 +18,103 @@
     </div>
     -->
 
+    <!--
     <div>
+        <label th:for=""></label>
+        <select th:field="*{}">
+            <option th:each="cheeseType : ${cheeseTypes}"
+                    th:text="${cheeseType.name}"
+                    th:value="${cheeseType}"></option>
+        </select>
+    </div>
+    -->
+
+    <p><div>
         <label th:for="title">Title: </label>
         <input type="text" th:field="*{title}"/>
         <span th:errors="*{title}"> </span>
-    </div>
+    </div></p>
 
-    <div>
-        <label th:for="primary_music_key">Primary Music Key: </label>
-        <input type="text" th:field="*{primary_music_key}"/>
-        <span th:errors="*{primary_music_key}"> </span>
-    </div>
 
-    <div>
+    <p><div>
+    <label th:for="primary_music_key">Primary Music Key</label>
+        <select th:field="*{primary_music_key}">
+            <option th:each="key : ${allMusicKeyTypes}"
+                    th:text="${key.name}"
+                    th:value="${key}"></option>
+        </select>
+        <span th:errors="*{primary_music_key}" />
+    </div></p>
+
+
+    <p><div>
+        <label th:for="secondary_music_key">Secondary Music Key</label>
+        <select th:field="*{secondary_music_key}">
+            <option th:each="key : ${allMusicKeyTypes}"
+                    th:text="${key.name}"
+                    th:value="${key}"></option>
+        </select>
+        <span th:errors="*{secondary_music_key}" />
+    </div></p>
+
+
+    <p><div>
+        <label th:for="mode">Mode</label>
+        <select th:field="*{mode}">
+            <option th:each="mode : ${allModes}"
+                    th:text="${mode.name}"
+                    th:value="${mode}"></option>
+        </select>
+        <span th:errors="*{mode}" />
+    </div></p>
+
+
+    <p><div>
         <label th:for="genre">Genre: </label>
         <input type="text" th:field="*{genre}"/>
         <span th:errors="*{genre}"> </span>
-    </div>
+    </div></p>
 
-    <div>
-        <label th:for="primary_time_sig">Primary Time Signature: </label>
-        <input type="text" th:field="*{primary_time_sig}"/>
-        <span th:errors="*{primary_time_sig}"> </span>
-    </div>
 
-    <div>
-        <label th:for="starting_tempo">Starting Tempo: </label>
-        <input type="text" th:field="*{starting_tempo}"/>
-        <span th:errors="*{starting_tempo}"> </span>
-    </div>
+    <p><span>Primary Time Signature:
 
-    <div>
-        <label th:for="notes">Description/Notes: </label>
-        <input type="text" th:field="*{notes}"/>
+        <select th:field="*{primary_time_sig_num}">
+            <option th:each="sig : ${allTimeSigNum}"
+                    th:text="${sig.name}"
+                    th:value="${sig}"></option>
+        </select>
+
+        <b>/</b>
+
+        <select th:field="*{primary_time_sig_den}">
+            <option th:each="sig : ${allTimeSigDen}"
+                    th:text="${sig.name}"
+                    th:value="${sig}"></option>
+        </select>
+
+        <span th:errors="*{primary_time_sig_num}" />
+        <span th:errors="*{primary_time_sig_den}" />
+
+    </span></p>
+
+
+    <p><div>
+        <label th:for="notes">Description/Notes: </label> <br/>
+        <textarea style="font-family:Arial;" rows="12" cols="55" th:field="*{notes}"></textarea>
         <span th:errors="*{notes}"> </span>
-    </div>
+    </div></p>
 
-    <div>
+
+    <p><div>
         <label th:for="isPublicPrivate">Make this work: </label>
         <select name="isPublicPrivate">
             <option value="private">Private</option>
             <option value="public">Public</option>
         </select>
-    </div>
+    </div></p>
 
-    <input type="submit" value="Add" />
+
+    <p><input type="submit" value="Add" /></p>
 
 </form>
 

@@ -1,11 +1,13 @@
 package org.launchcode.projectmanager.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.launchcode.projectmanager.models.enums.Mode;
+import org.launchcode.projectmanager.models.enums.MusicKeyType;
+import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
+import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @Entity
 public class Project {
@@ -14,26 +16,43 @@ public class Project {
     @GeneratedValue
     private int id;
 
+    @NotNull
     @Size(min = 1, max = 500, message = "Title cannot be empty!")
     private String title;
 
-    private String primary_music_key;
+    @NotNull
+    private MusicKeyType primary_music_key;
 
-    //private String secondary_music_key;
+    @NotNull
+    private MusicKeyType secondary_music_key;
 
+    @NotNull
+    private Mode mode;
+
+    @NotNull
     private String genre;
 
-    private String primary_time_sig;
+    @NotNull
+    private TimeSignatureNumerator primary_time_sig_num;
+
+    @NotNull
+    private TimeSignatureDenominator primary_time_sig_den;
 
     //private String secondary_time_sig;
 
-    private String starting_tempo;
+    //private String starting_tempo;
 
+    @NotNull
     private String notes;
 
     //private List<String> file_paths;
 
     private boolean isPublic = false;
+
+    //Many(projects)to One(user)
+    @ManyToOne
+    private User user;
+
 
     public Project() {}
 
@@ -50,14 +69,25 @@ public class Project {
     public void setTitle(String title) {
         this.title = title;
     }
+
     //PRIMARY MUSIC KEY
-    public String getPrimary_music_key() {
+    public MusicKeyType getPrimary_music_key() {
         return primary_music_key;
     }
 
-    public void setPrimary_music_key(String primary_music_key) {
+    public void setPrimary_music_key(MusicKeyType primary_music_key) {
         this.primary_music_key = primary_music_key;
     }
+
+    //SECONDARY MUSIC KEY
+    public MusicKeyType getSecondary_music_key() {
+        return secondary_music_key;
+    }
+
+    public void setSecondary_music_key(MusicKeyType secondary_music_key) {
+        this.secondary_music_key = secondary_music_key;
+    }
+
     //GENRE
     public String getGenre() {
         return genre;
@@ -66,22 +96,33 @@ public class Project {
     public void setGenre(String genre) {
         this.genre = genre;
     }
-    //PRIMARY TIME SIG
-    public String getPrimary_time_sig() {
-        return primary_time_sig;
+
+    //PRIMARY TIME SIG (NUM and DEN)
+    public TimeSignatureNumerator getPrimary_time_sig_num() {
+        return primary_time_sig_num;
     }
 
-    public void setPrimary_time_sig(String primary_time_sig) {
-        this.primary_time_sig = primary_time_sig;
-    }
-    //STARTING TEMPO
-    public String getStarting_tempo() {
-        return starting_tempo;
+    public void setPrimary_time_sig_num(TimeSignatureNumerator primary_time_sig_num) {
+        this.primary_time_sig_num = primary_time_sig_num;
     }
 
-    public void setStarting_tempo(String starting_tempo) {
-        this.starting_tempo = starting_tempo;
+    public TimeSignatureDenominator getPrimary_time_sig_den() {
+        return primary_time_sig_den;
     }
+
+    public void setPrimary_time_sig_den(TimeSignatureDenominator primary_time_sig_den) {
+        this.primary_time_sig_den = primary_time_sig_den;
+    }
+
+    //MODE
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
     //NOTES
     public String getNotes() {
         return notes;
@@ -90,6 +131,7 @@ public class Project {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
     //BOOLEAN "PUBLIC"
     public boolean isPublic() {
         return isPublic;
@@ -97,5 +139,14 @@ public class Project {
 
     public void setPublic(boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    //ONE TO MANY USER
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
