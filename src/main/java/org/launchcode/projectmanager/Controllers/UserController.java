@@ -48,10 +48,12 @@ public class UserController {
                                     @RequestParam String verifyPassword,
                                     HttpSession session) {
         if (errors.hasErrors()) {
+            model.addAttribute("title", "Sign Up");
             return "user/create-user";
         }
 
         if (!verifyPassword.equals(newUser.getPassword())) {
+            model.addAttribute("title", "Sign Up");
             model.addAttribute("verifyPasswordError", "Passwords don't match");
             return "user/create-user";
         }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<h1 th:text="${title}"></h1>
+
+<h2>Actions</h2>
+
+<ul>
+    <li><a href="/project/create-project">Create a new project profile</a></li>
+    <li><a href="">View All Projects</a></li>
+    <li><a href="">Delete Projects</a></li>
+    <li><a href="/user/user-profile">Edit Profile and Settings</a></li>
+</ul>
+
+<hr/>
+
+<h2>Recent Works</h2>
+
+<p th:each="project : ${projectList}" th:text="${project.title}"></p>
+
+</body>
+
+</html>

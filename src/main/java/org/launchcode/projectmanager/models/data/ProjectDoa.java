@@ -5,8 +5,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
-@Transactional
 @Repository
+@Transactional
 public interface ProjectDoa extends CrudRepository<Project, Integer> {
+
+    List<Project> findByUserId(int userId);
+
 }

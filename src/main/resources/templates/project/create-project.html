@@ -98,6 +98,28 @@
     </span></p>
 
 
+    <p><span>Secondary Time Signature:
+
+        <select th:field="*{secondary_time_sig_num}">
+            <option th:each="sig : ${allTimeSigNum}"
+                    th:text="${sig.name}"
+                    th:value="${sig}"></option>
+        </select>
+
+        <b>/</b>
+
+        <select th:field="*{secondary_time_sig_den}">
+            <option th:each="sig : ${allTimeSigDen}"
+                    th:text="${sig.name}"
+                    th:value="${sig}"></option>
+        </select>
+
+        <span th:errors="*{secondary_time_sig_num}" />
+        <span th:errors="*{secondary_time_sig_den}" />
+
+    </span></p>
+
+
     <p><div>
         <label th:for="notes">Description/Notes: </label> <br/>
         <textarea style="font-family:Arial;" rows="12" cols="55" th:field="*{notes}"></textarea>

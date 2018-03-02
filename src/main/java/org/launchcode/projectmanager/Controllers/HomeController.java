@@ -2,6 +2,7 @@ package org.launchcode.projectmanager.Controllers;
 
 
 import org.launchcode.projectmanager.models.User;
+import org.launchcode.projectmanager.models.data.ProjectDoa;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -20,14 +21,18 @@ public class HomeController {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private ProjectDoa projectDoa;
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String welcome(Model model, HttpSession session) {
 
         if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
         } else {
-            model.addAttribute("loggedInUser", "Current User: " + ((User) session.getAttribute("currentUserObj")).getUsername());
-        }
+            User currentUser = (User) session.getAttribute("currentUserObj");
+            model.addAttribute("loggedInUser", "Current User: " + (currentUser.getUsername()));
+    }
 
         return "index/welcome";
     }

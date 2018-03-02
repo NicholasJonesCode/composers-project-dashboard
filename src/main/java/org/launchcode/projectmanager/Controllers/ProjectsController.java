@@ -1,5 +1,6 @@
 package org.launchcode.projectmanager.Controllers;
 
+import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.Project;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.ProjectDoa;
@@ -20,9 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
-@RequestMapping("projects")
+@RequestMapping("project")
 public class ProjectsController {
 
     @Autowired
@@ -73,6 +75,18 @@ public class ProjectsController {
         projectDoa.save(newProject);
 
         return new ModelAndView("redirect:/user/user-profile");
+    }
+
+    @RequestMapping(value = "dashboard", method = RequestMethod.GET)
+    public String displayDashboard(Model model, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        List<Project> last3projects = Tools.getLastProjectsUpTo3(projectDoa.findByUserId(currentUser.getId()));
+
+        model.addAttribute("title", currentUser.getUsername() + "'s Dashboard");
+        model.addAttribute("projectList", last3projects);
+
+        return "project/dashboard";
     }
 
 }

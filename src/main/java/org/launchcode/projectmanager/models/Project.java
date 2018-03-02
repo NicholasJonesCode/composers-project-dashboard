@@ -1,5 +1,6 @@
 package org.launchcode.projectmanager.models;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.launchcode.projectmanager.models.enums.Mode;
 import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
@@ -15,10 +16,14 @@ public class Project {
     @Id
     @GeneratedValue
     private int id;
-
-    @NotNull
-    @Size(min = 1, max = 500, message = "Title cannot be empty!")
+    
+    @Size(min = 1, message = "Title cannot be empty!")
+    //@Size(min = 1, max = 500, message = "Title cannot be empty!")
     private String title;
+
+    //subtitle
+
+    //lyricist?
 
     @NotNull
     private MusicKeyType primary_music_key;
@@ -26,23 +31,20 @@ public class Project {
     @NotNull
     private MusicKeyType secondary_music_key;
 
-    @NotNull
     private Mode mode;
 
-    @NotNull
     private String genre;
 
-    @NotNull
     private TimeSignatureNumerator primary_time_sig_num;
 
-    @NotNull
     private TimeSignatureDenominator primary_time_sig_den;
 
-    //private String secondary_time_sig;
+    private TimeSignatureNumerator secondary_time_sig_num;
+
+    private TimeSignatureDenominator secondary_time_sig_den;
 
     //private String starting_tempo;
 
-    @NotNull
     private String notes;
 
     //private List<String> file_paths;
@@ -50,7 +52,7 @@ public class Project {
     private boolean isPublic = false;
 
     //Many(projects)to One(user)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
 
@@ -112,6 +114,23 @@ public class Project {
 
     public void setPrimary_time_sig_den(TimeSignatureDenominator primary_time_sig_den) {
         this.primary_time_sig_den = primary_time_sig_den;
+    }
+
+    //SECONDARY TIME SIG (NUM and DEN)
+    public TimeSignatureNumerator getSecondary_time_sig_num() {
+        return secondary_time_sig_num;
+    }
+
+    public void setSecondary_time_sig_num(TimeSignatureNumerator secondary_time_sig_num) {
+        this.secondary_time_sig_num = secondary_time_sig_num;
+    }
+
+    public TimeSignatureDenominator getSecondary_time_sig_den() {
+        return secondary_time_sig_den;
+    }
+
+    public void setSecondary_time_sig_den(TimeSignatureDenominator secondary_time_sig_den) {
+        this.secondary_time_sig_den = secondary_time_sig_den;
     }
 
     //MODE
