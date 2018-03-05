@@ -81,7 +81,7 @@ public class ProjectsController {
     public String displayDashboard(Model model, HttpSession session) {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
-        List<Project> last3projects = Tools.getLastProjectsUpTo3(projectDoa.findByUserId(currentUser.getId()));
+        List<Project> last3projects = Tools.getLastXProjects(projectDoa.findByUserId(currentUser.getId()), 3);
 
         model.addAttribute("title", currentUser.getUsername() + "'s Dashboard");
         model.addAttribute("projectList", last3projects);

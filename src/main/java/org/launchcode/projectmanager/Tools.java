@@ -29,24 +29,32 @@ public class Tools {
         return makeSHA256HashString(password).equals(currentHashedPassword);
     }
 
-    public static List<Project> getLastProjectsUpTo3(List<Project> projectList) {
+
+    //LOL MADE A NEW AND COOLER ONE XDDD
+    public static List<Project> getLastXProjects(List<Project> projectList, Integer x) {
         if (projectList.isEmpty()) {
         }
 
-        if(projectList.size() <= 3) {
-            return projectList;
+        if (projectList.size() <= x) {
+
+            List<Project> finalList = new ArrayList<>();
+
+            for (int i = 1; i <= (projectList.size()); i++) {
+                Project newProject = projectList.get(projectList.size() - i);
+                finalList.add(newProject);
+            }
+
+            return finalList;
         }
 
-        Project lastProject = projectList.get(projectList.size() - 1);
-        Project secondToLastProject = projectList.get(projectList.size() - 2);
-        Project thirdToLastProject = projectList.get(projectList.size() - 3);
         List<Project> finalList = new ArrayList<>();
-        finalList.add(lastProject);
-        finalList.add(secondToLastProject);
-        finalList.add(thirdToLastProject);
+
+        for (int i = 1; i < (x+1); i++) {
+            Project newProject = projectList.get(projectList.size() - i);
+            finalList.add(newProject);
+        }
 
         return finalList;
-
     }
 
 }
