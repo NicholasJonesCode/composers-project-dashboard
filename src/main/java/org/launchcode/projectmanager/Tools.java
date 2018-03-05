@@ -13,7 +13,7 @@ import java.util.List;
 public class Tools {
 
     @Autowired
-    ProjectDoa projectDoa;
+    public ProjectDoa projectDoa;
 
     public static String makeSHA256HashString(String message) {
         try {
@@ -26,14 +26,11 @@ public class Tools {
     }
 
     public static boolean checkPassword (String password, String currentHashedPassword) {
-        if (makeSHA256HashString(password).equals(currentHashedPassword)) {
-            return true;
-        } return false;
+        return makeSHA256HashString(password).equals(currentHashedPassword);
     }
 
     public static List<Project> getLastProjectsUpTo3(List<Project> projectList) {
-        if(projectList.isEmpty()) {
-
+        if (projectList.isEmpty()) {
         }
 
         if(projectList.size() <= 3) {

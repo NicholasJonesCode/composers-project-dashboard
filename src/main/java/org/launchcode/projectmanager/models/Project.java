@@ -1,6 +1,5 @@
 package org.launchcode.projectmanager.models;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.launchcode.projectmanager.models.enums.Mode;
 import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
@@ -16,19 +15,19 @@ public class Project {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Size(min = 1, message = "Title cannot be empty!")
     //@Size(min = 1, max = 500, message = "Title cannot be empty!")
     private String title;
 
-    //subtitle
+    private String subtitle;
 
-    //lyricist?
+    private String lyricist;
 
-    @NotNull
+    private String instruments; //text area
+
     private MusicKeyType primary_music_key;
 
-    @NotNull
     private MusicKeyType secondary_music_key;
 
     private Mode mode;
@@ -70,6 +69,33 @@ public class Project {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    //SUBTITLE
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    //LYRICIST
+    public String getLyricist() {
+        return lyricist;
+    }
+
+    public void setLyricist(String lyricist) {
+        this.lyricist = lyricist;
+    }
+
+    //INSTRUMENTS
+    public String getInstruments() {
+        return instruments;
+    }
+
+    public void setInstruments(String instruments) {
+        this.instruments = instruments;
     }
 
     //PRIMARY MUSIC KEY

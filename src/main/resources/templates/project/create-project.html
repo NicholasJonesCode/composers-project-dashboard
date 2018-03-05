@@ -37,6 +37,20 @@
 
 
     <p><div>
+        <label th:for="subtitle">Subtitle: </label>
+        <input type="text" th:field="*{subtitle}"/>
+        <span th:errors="*{subtitle}"> </span>
+    </div></p>
+
+
+    <p><div>
+        <label th:for="lyricist">Lyricist: </label>
+        <input type="text" th:field="*{lyricist}"/>
+        <span th:errors="*{lyricist}"> </span>
+    </div></p>
+
+
+    <p><div>
     <label th:for="primary_music_key">Primary Music Key</label>
         <select th:field="*{primary_music_key}">
             <option th:each="key : ${allMusicKeyTypes}"
@@ -118,6 +132,13 @@
         <span th:errors="*{secondary_time_sig_den}" />
 
     </span></p>
+
+
+    <p><div>
+        <label th:for="instruments">Instrument Lineup: </label> <br/>
+        <textarea style="font-family:Arial;" rows="7" cols="45" th:field="*{instruments}"></textarea>
+        <span th:errors="*{instruments}"> </span>
+    </div></p>
 
 
     <p><div>
