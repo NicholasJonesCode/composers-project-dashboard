@@ -33,10 +33,6 @@ public class ProjectsController {
     @Autowired
     private ProjectDoa projectDoa;
 
-//    @RequestMapping(value = "", method = RequestMethod.GET)
-//    public String displayMainMenu() {
-//        return null;
-//    }
 
     @RequestMapping(value = "create-project", method = RequestMethod.GET)
     public String displayCreateProject(Model model) {

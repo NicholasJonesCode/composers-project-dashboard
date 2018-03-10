@@ -6,7 +6,6 @@ import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
 import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -186,7 +185,7 @@ public class Project {
         isPublic = aPublic;
     }
 
-    //ONE TO MANY USER
+    //MANY TO ONE USER
     public User getUser() {
         return user;
     }
