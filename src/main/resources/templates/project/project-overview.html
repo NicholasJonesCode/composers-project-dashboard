@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<h2 th:text="${title}"></h2>
+
+<div>
+    <span><b>Title: </b></span>
+    <span th:text="${project.title}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Subtitle: </b></span>
+    <span th:text="${project.subtitle}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Lyricist: </b></span>
+    <span th:text="${project.lyricist}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Primary Music Key: </b></span>
+    <span th:text="${project.primary_music_key.name}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Secondary Music Key: </b></span>
+    <span th:text="${project.secondary_music_key.name}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Mode: </b></span>
+    <span th:text="${project.mode.name}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Genre: </b></span>
+    <span th:text="${project.genre}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Primary Time Signature: </b></span>
+    <span th:text="${project.primary_time_sig_num.name}"></span>/<span th:text="${project.primary_time_sig_den.name}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Secondary Time Signature: </b></span>
+    <span th:text="${project.secondary_time_sig_num.name}"></span>/<span th:text="${project.secondary_time_sig_den.name}"></span>
+</div> <br/>
+
+<div>
+    <span><b>Instrument Lineup: </b></span>
+    <p th:text="${project.instruments}"></p>
+</div> <br/>
+
+<div>
+    <span><b>Notes/Description: </b></span>
+    <p th:text="${project.notes}"></p>
+</div> <br/>
+
+<hr/>
+
+<h3>Tasks</h3>
+
+<div>
+    <table class="tasks" style="border:2px solid black;">
+
+        <th style="border:2px solid black;" class="tasks">Description</th>
+        <th style="border:2px solid black;" class="tasks">Due Date</th>
+
+        <tr style="border:2px solid black;" class="tasks" th:each="task : ${tasks}">
+            <td style="border:2px solid black;" class="tasks" th:text="${task.description}"></td>
+            <td style="border:2px solid black;" class="tasks" th:text="${task.dueDate}"></td>
+        </tr>
+
+    </table>
+</div>
+
+<br/>
+
+<h3>Make task:</h3>
+
+<form method="post" th:object="${task}" th:action="'/project/create-task/' + ${project.Id}">
+
+    <label>Description:
+        <br/>
+        <input type="text" th:field="*{description}" size="45" />
+    </label>
+    <span th:errors="*{description}"></span>
+
+    <br/>
+
+    <label>Due Date ("mm/dd/yyyy"):
+        <br/>
+        <input type="text" name="dueDate" />
+    </label>
+    <span th:text="${dateError}"></span>
+
+    <br/> <br/>
+    <input type="submit" value="Make it" />
+</form>
+
+</body>
+
+</html>

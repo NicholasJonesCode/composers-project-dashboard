@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("")
-@Scope("session")
 public class HomeController {
 
     @Autowired
@@ -34,6 +34,8 @@ public class HomeController {
             model.addAttribute("loggedInUser", "Current User: " + (currentUser.getUsername()));
     }
 
+        LocalDate date = LocalDate.now();
+        model.addAttribute("date", String.format("Today's date is: %s-%d-%d", date.getMonth().getValue(), date.getDayOfMonth(), date.getYear()));
         return "index/welcome";
     }
 

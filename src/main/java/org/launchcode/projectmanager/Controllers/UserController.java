@@ -18,7 +18,6 @@ import javax.validation.Valid;
 
 @Controller
 @RequestMapping("user")
-@Scope("session")
 public class UserController {
 
     /*

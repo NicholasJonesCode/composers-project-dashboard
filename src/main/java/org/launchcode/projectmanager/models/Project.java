@@ -7,6 +7,8 @@ import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Project {
@@ -52,6 +54,10 @@ public class Project {
     //Many(projects)to One(user)
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+
+    //One(project)to Many(tasks)
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Task> tasks = new ArrayList<>();
 
 
     public Project() {}

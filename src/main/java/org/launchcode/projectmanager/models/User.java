@@ -22,6 +22,7 @@ public class User {
     @Size(min = 6, max = 256)
     private String password;
 
+    //One (User) to Many (projects)
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private List<Project> projects = new ArrayList<>();

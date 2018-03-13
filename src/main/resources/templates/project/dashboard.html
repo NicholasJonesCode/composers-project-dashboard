@@ -20,7 +20,7 @@
 
 <h2>Recent Works</h2>
 
-<p th:each="project : ${projectList}" th:text="${project.title}"></p>
+<p th:each="project : ${projectList}"><a th:href="'/project/project-overview/' + ${project.id}" th:text="${project.title}"></a></p>
 
 </body>
 

@@ -12,8 +12,6 @@ import java.util.List;
 
 public class Tools {
 
-    @Autowired
-    public ProjectDoa projectDoa;
 
     public static String makeSHA256HashString(String message) {
         try {
