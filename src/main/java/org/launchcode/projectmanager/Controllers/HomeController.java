@@ -35,7 +35,7 @@ public class HomeController {
     }
 
         LocalDate date = LocalDate.now();
-        model.addAttribute("date", String.format("Today's date is: %s-%d-%d", date.getMonth().getValue(), date.getDayOfMonth(), date.getYear()));
+        model.addAttribute("date", String.format("Today's date is: %s %d, %d", date.getMonth(), date.getDayOfMonth(), date.getYear()));
         return "index/welcome";
     }
 

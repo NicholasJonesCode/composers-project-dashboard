@@ -18,7 +18,6 @@ public class Project {
     private int id;
 
     @Size(min = 1, message = "Title cannot be empty!")
-    //@Size(min = 1, max = 500, message = "Title cannot be empty!")
     private String title;
 
     private String subtitle;

@@ -25,6 +25,8 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -77,7 +79,7 @@ public class ProjectsController {
         newProject.setUser(theUser);
         projectDoa.save(newProject);
 
-        return new ModelAndView("redirect:/user/user-profile");
+        return new ModelAndView("redirect:/project/dashboard");
     }
 
     @RequestMapping(value = "dashboard", method = RequestMethod.GET)
@@ -120,6 +122,10 @@ public class ProjectsController {
 
         String path = "redirect:/project/project-overview/" + projectId;
 
+        /*Working on new control flow:
+        *if description has errors and date is empty
+        */
+
         if (bindingResult.hasFieldErrors("description")) {
 
             try {
@@ -157,4 +163,5 @@ public class ProjectsController {
         return new ModelAndView(path);
     }
 
+    public ArrayList<String> coolList = new ArrayList<>(Arrays.asList("Yeet", "Yeet2"));
 }

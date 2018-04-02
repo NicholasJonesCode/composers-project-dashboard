@@ -14,22 +14,19 @@
 <p th:text="'Your Password: ' + '********' "></p>
 <span><form method="get" action="/user/change-password"><input type="submit" value="Change Password"/></form></span>
 
-<p><a href="/">Go back to the front page</a></p> <br/>
-
 <p>Click below to remove your account: </p>
 <form method="get" action="/user/delete-user">
     <input type="submit" value="Delete" />
 </form>
 
-<p>Add new composition:</p>
-<form method="get" action="/project/create-project">
-    <input type="submit" value="Go" />
-</form>
+<br/>
 
 <p>Go to Dashboard:</p>
 <form method="get" action="/project/dashboard">
     <input type="submit" value="Go" />
 </form>
+
+<p><a href="/">Go back to the front page</a></p>
 
 </body>
 

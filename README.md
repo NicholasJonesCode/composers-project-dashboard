@@ -4,7 +4,7 @@
 
 ### Overview
 
-Composer's Project Dashboard is a multi-feature, user-based project manager centered around compositions. 
+Composer's Project Dashboard is a multi-feature, user-based project manager centered around musical compositions. 
 
 ### Features
 

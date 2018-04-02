@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.websocket.OnError;
 
 @Controller
 @RequestMapping("user")
@@ -92,7 +93,8 @@ public class UserController {
         currentUser.setUsername(newUsername);
         userDao.save(currentUser);
 
-        session.setAttribute("currentUsername", newUsername);
+                //SESSION MANAGEMENT
+        session.setAttribute("currentUserObj", currentUser);
 
         return "redirect:user-profile";
     }
