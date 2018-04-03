@@ -154,7 +154,7 @@ public class UserController {
 
         model.addAttribute("new_user_name", proposedUser.getUsername());
 
-        return "redirect:user-profile";
+        return "redirect:/project/dashboard";
     }
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)

@@ -71,10 +71,12 @@
 
         <th style="border:2px solid black;" class="tasks">Description</th>
         <th style="border:2px solid black;" class="tasks">Due Date</th>
+        <th style="border:2px solid black;" class="tasks">Delete</th>
 
         <tr style="border:2px solid black;" class="tasks" th:each="task : ${tasks}">
             <td style="border:2px solid black;" class="tasks" th:text="${task.description}"></td>
             <td style="border:2px solid black;" class="tasks" th:text="${task.dueDate}"></td>
+            <td style="border:2px solid black;" class="tasks"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
         </tr>
 
     </table>
@@ -110,7 +112,7 @@
 
 <ul>
     <li><a href="/project/edit">Edit this profile</a></li>
-    <li><a href="/project/delete">Delete this profile</a></li>
+    <li><a th:href="'/project/delete-project/' + ${project.Id}">Delete this profile</a></li>
 </ul>
 
 </body>

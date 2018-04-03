@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -42,6 +43,18 @@ public class ProjectsController {
     @Autowired
     private TaskDao taskDao;
 
+
+    @RequestMapping(value = "dashboard", method = RequestMethod.GET)
+    public String displayDashboard(Model model, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        List<Project> last3projects = Tools.getLastXProjects(projectDoa.findByUserId(currentUser.getId()), 3);
+
+        model.addAttribute("title", currentUser.getUsername() + "'s Dashboard");
+        model.addAttribute("projectList", last3projects);
+
+        return "project/dashboard";
+    }
 
     @RequestMapping(value = "create-project", method = RequestMethod.GET)
     public String displayCreateProject(Model model) {
@@ -80,18 +93,6 @@ public class ProjectsController {
         projectDoa.save(newProject);
 
         return new ModelAndView("redirect:/project/dashboard");
-    }
-
-    @RequestMapping(value = "dashboard", method = RequestMethod.GET)
-    public String displayDashboard(Model model, HttpSession session) {
-
-        User currentUser = (User) session.getAttribute("currentUserObj");
-        List<Project> last3projects = Tools.getLastXProjects(projectDoa.findByUserId(currentUser.getId()), 3);
-
-        model.addAttribute("title", currentUser.getUsername() + "'s Dashboard");
-        model.addAttribute("projectList", last3projects);
-
-        return "project/dashboard";
     }
 
     @RequestMapping(value = "project-overview/{projectId}", method = RequestMethod.GET)
@@ -161,6 +162,22 @@ public class ProjectsController {
         taskDao.save(task);
 
         return new ModelAndView(path);
+    }
+
+    @RequestMapping(value = "delete-task/{taskId}/{projectId}", method = RequestMethod.POST)
+    public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId, HttpServletRequest request) {
+
+        taskDao.delete(taskId);
+
+        return new ModelAndView("redirect:/project/project-overview/" + projectId);
+    }
+
+    @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView deleteProject(@PathVariable int projectId) {
+
+        projectDoa.delete(projectId);
+
+        return new ModelAndView("redirect:/project/dashboard");
     }
 
     @RequestMapping(value = "all-projects", method = RequestMethod.GET)
