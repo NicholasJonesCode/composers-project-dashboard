@@ -163,5 +163,14 @@ public class ProjectsController {
         return new ModelAndView(path);
     }
 
-    public ArrayList<String> coolList = new ArrayList<>(Arrays.asList("Yeet", "Yeet2"));
+    @RequestMapping(value = "all-projects", method = RequestMethod.GET)
+    public String displayAllProjects(Model model, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        model.addAttribute("title", "All Projects");
+        model.addAttribute("allProjects", projectDoa.findByUserId(currentUser.getId()));
+
+        return "project/all-projects";
+    }
 }

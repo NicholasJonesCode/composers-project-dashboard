@@ -5,7 +5,6 @@ import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.ProjectDoa;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,5 +37,4 @@ public class HomeController {
         model.addAttribute("date", String.format("Today's date is: %s %d, %d", date.getMonth(), date.getDayOfMonth(), date.getYear()));
         return "index/welcome";
     }
-
 }

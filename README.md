@@ -17,6 +17,7 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 
 ### Technologies Used
 * Java
+* JavaScript/Angular
 * MySQL
 * Springboot Framework
 * JPA

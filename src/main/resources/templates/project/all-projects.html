@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+
+<body>
+
+<u><h1 th:text="${title}"></h1></u>
+
+<div>
+
+    <p th:each="project : ${allProjects}">
+
+        <ul>
+            <li>
+                <a th:href="'/project/project-overview/' + ${project.id}" th:text="${project.title}"></a>
+            </li>
+                Notes: <br/>
+                <span th:text="${project.notes}"></span>
+        </ul>
+
+    </p>
+
+    <br/>
+    <p><a href="/project/dashboard"> Back to Dashboard</a></p>
+
+</div>
+
+</body>
+
+</html>
