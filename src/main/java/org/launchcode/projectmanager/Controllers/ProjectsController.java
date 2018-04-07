@@ -12,6 +12,7 @@ import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
 import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -65,6 +66,7 @@ public class ProjectsController {
         model.addAttribute("allMusicKeyTypes", MusicKeyType.values());
         model.addAttribute("allTimeSigNum", TimeSignatureNumerator.values());
         model.addAttribute("allTimeSigDen", TimeSignatureDenominator.values());
+
         return "project/create-project";
     }
 
@@ -165,7 +167,7 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "delete-task/{taskId}/{projectId}", method = RequestMethod.POST)
-    public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId, HttpServletRequest request) {
+    public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId) {
 
         taskDao.delete(taskId);
 
