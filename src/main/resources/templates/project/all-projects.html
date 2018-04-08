@@ -20,11 +20,20 @@
             </li>
                 Notes: <br/>
                 <span th:text="${project.notes}"></span>
+                <br/>
+                <form th:action="'/project/delete-project/' + ${project.id}" method="post">
+                    <input type="submit" value="Delete" style="color: white; background: red" />
+                </form>
         </ul>
 
     </p>
 
+    <p th:if="allProjects.isEmpty">
+        No projects yet, rip. <a href="/project/create-project">make one lol</a>
+    </p>
+
     <br/>
+    <hr/>
     <p><a href="/project/dashboard"> Back to Dashboard</a></p>
 
 </div>

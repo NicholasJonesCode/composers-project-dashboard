@@ -1,7 +1,5 @@
 package org.launchcode.projectmanager.models;
 
-import org.aspectj.lang.annotation.DeclareError;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,7 +13,7 @@ public class Task {
     private int id;
 
     @NotNull
-    @Size(min = 1, message = "Description can't be empty")
+    @Size(min = 1, max = 4000, message = "Description can't be empty, and can't go over 4000")
     private String description;
 
 

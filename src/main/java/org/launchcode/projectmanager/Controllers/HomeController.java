@@ -2,9 +2,6 @@ package org.launchcode.projectmanager.Controllers;
 
 
 import org.launchcode.projectmanager.models.User;
-import org.launchcode.projectmanager.models.data.ProjectDoa;
-import org.launchcode.projectmanager.models.data.UserDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +13,6 @@ import java.time.LocalDate;
 @Controller
 @RequestMapping("")
 public class HomeController {
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private ProjectDoa projectDoa;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String welcome(Model model, HttpSession session) {

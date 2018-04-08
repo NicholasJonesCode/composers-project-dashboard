@@ -12,7 +12,6 @@ import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
 import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,14 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -71,7 +67,8 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "create-project", method = RequestMethod.POST)
-    public ModelAndView processCreateProject(@ModelAttribute @Valid Project newProject, Errors errors, Model model, @RequestParam String isPublicPrivate, HttpSession session) {
+    public ModelAndView processCreateProject(@ModelAttribute @Valid Project newProject, Errors errors, Model model, @RequestParam String isPublicPrivate,
+                                             HttpSession session, final RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors()) {
             model.addAttribute(new Project());
@@ -93,6 +90,8 @@ public class ProjectsController {
         User theUser = userDao.findOne(currentUser.getId());
         newProject.setUser(theUser);
         projectDoa.save(newProject);
+
+        redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been created", newProject.getTitle()));
 
         return new ModelAndView("redirect:/project/dashboard");
     }
@@ -128,6 +127,22 @@ public class ProjectsController {
         /*Working on new control flow:
         *if description has errors and date is empty
         */
+
+        if (!bindingResult.hasFieldErrors("description") && dueDate.isEmpty()) {
+
+            Project theProject = projectDoa.findOne(projectId);
+            task.setProject(theProject);
+            taskDao.save(task);
+
+            return new ModelAndView(path);
+        }
+
+        if (bindingResult.hasFieldErrors("description") && dueDate.isEmpty()) {
+
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.task", bindingResult);
+            redirectAttributes.addFlashAttribute("task", task);
+            return new ModelAndView(path);
+        }
 
         if (bindingResult.hasFieldErrors("description")) {
 
@@ -175,9 +190,13 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView deleteProject(@PathVariable int projectId) {
+    public ModelAndView deleteProject(@PathVariable int projectId, final RedirectAttributes redirectAttributes) {
+
+        String projectName = projectDoa.findOne(projectId).getTitle();
 
         projectDoa.delete(projectId);
+
+        redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been removed permanently", projectName));
 
         return new ModelAndView("redirect:/project/dashboard");
     }

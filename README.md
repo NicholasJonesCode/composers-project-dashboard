@@ -1,6 +1,6 @@
 # Notes
 
-(Please note this this copy of the README is different from the P2 assignment, as it is more updated)
+(Please note this this copy of the README is different from the P2 LiftOff assignment, as it is more updated)
 
 ### Overview
 
@@ -31,4 +31,4 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 * possibly AngularJS
 * Spring Security / Basic Encryption
 * JPA Querying
-* Continued and extended learning of the technolgies I already learned in LC101
+* Continued and extended learning of the technologies I already learned in LC101

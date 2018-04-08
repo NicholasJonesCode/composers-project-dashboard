@@ -67,7 +67,7 @@
 <h3>Ideas/Reminders/Tasks</h3>
 
 <div>
-    <table class="tasks" style="border:2px solid black;">
+    <table class="tasks" style="border:2px solid black; table-layout: fixed;">
 
         <th style="border:2px solid black;" class="tasks">Description</th>
         <th style="border:2px solid black;" class="tasks">Due Date</th>
@@ -88,17 +88,17 @@
 
 <form method="post" th:object="${task}" th:action="'/project/create-task/' + ${project.Id}">
 
-    <label>Description:
+    <label>Description (required):
         <br/>
-        <input type="text" th:field="*{description}" size="45" />
+        <textarea th:field="*{description}" rows="2" cols="45"></textarea>
     </label>
     <span th:errors="*{description}"></span>
 
     <br/>
 
-    <label>Due Date ("mm/dd/yyyy"):
+    <label>Due Date (optional) [mm/dd/yyyy]:
         <br/>
-        <input type="text" name="dueDate" />
+        <input type="text" name="dueDate" size="9" />
     </label>
     <span th:text="${dateError}"></span>
 
@@ -113,6 +113,7 @@
 <ul>
     <li><a href="/project/edit">Edit this profile</a></li>
     <li><a th:href="'/project/delete-project/' + ${project.Id}">Delete this profile</a></li>
+    <li><a href="/project/dashboard">Go back to the Dashboard</a></li>
 </ul>
 
 </body>

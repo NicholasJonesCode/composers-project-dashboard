@@ -5,14 +5,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ProjectManagerInterceptor implements HandlerInterceptor {
 
-    List<String> allowedURIs = new ArrayList<>(Arrays.asList(
+    private List<String> allowedURIs = new ArrayList<>(Arrays.asList(
             "/",
             "/user/login",
             "/user/create-user"
