@@ -64,19 +64,19 @@
 
 <hr/>
 
-<h3>Ideas/Reminders/Tasks</h3>
-
 <div>
-    <table class="tasks" style="border:2px solid black; table-layout: fixed;">
+    <table class="tasks-table">
 
-        <th style="border:2px solid black;" class="tasks">Description</th>
-        <th style="border:2px solid black;" class="tasks">Due Date</th>
-        <th style="border:2px solid black;" class="tasks">Delete</th>
+        <caption><b>Ideas/Reminders/Tasks</b></caption>
 
-        <tr style="border:2px solid black;" class="tasks" th:each="task : ${tasks}">
-            <td style="border:2px solid black;" class="tasks" th:text="${task.description}"></td>
-            <td style="border:2px solid black;" class="tasks" th:text="${task.dueDate}"></td>
-            <td style="border:2px solid black;" class="tasks"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
+        <th class="tasks-head">Description</th>
+        <th class="tasks-head">Due Date</th>
+        <th class="tasks-head">Delete</th>
+
+        <tr class="tasks-row" th:each="task : ${tasks}">
+            <td class="tasks-data" th:text="${task.description}"></td>
+            <td class="tasks-data" th:text="${task.dueDate}"></td>
+            <td class="tasks-data"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
         </tr>
 
     </table>
@@ -96,11 +96,11 @@
 
     <br/>
 
-    <label>Due Date (optional) [mm/dd/yyyy]:
+    <label>Due Date (optional):
         <br/>
-        <input type="text" name="dueDate" size="9" />
+        <input type="date" th:field="*{dueDate}" size="9" />
     </label>
-    <span th:text="${dateError}"></span>
+    <span></span>
 
     <br/> <br/>
     <input type="submit" value="Submit" />

@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8"/>
-    <title></title>
-</head>
+<head th:replace="fragments :: head"></head>
 
 <body>
 
@@ -22,13 +19,13 @@
                 <span th:text="${project.notes}"></span>
                 <br/>
                 <form th:action="'/project/delete-project/' + ${project.id}" method="post">
-                    <input type="submit" value="Delete" style="color: white; background: red" />
+                    <input type="submit" value="Delete" class="delete-button" />
                 </form>
         </ul>
 
     </p>
 
-    <p th:if="allProjects.isEmpty">
+    <p th:unless="${allProjects.size()}">
         No projects yet, rip. <a href="/project/create-project">make one lol</a>
     </p>
 

@@ -1,5 +1,7 @@
 package org.launchcode.projectmanager;
 
+import org.launchcode.projectmanager.models.data.ProjectDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -11,11 +13,17 @@ import java.util.List;
 
 public class ProjectManagerInterceptor implements HandlerInterceptor {
 
+    @Autowired
+    private ProjectDao projectDao;
+
     private List<String> allowedURIs = new ArrayList<>(Arrays.asList(
             "/",
             "/user/login",
-            "/user/create-user"
+            "/user/create-user",
+            "/blog"
     ));
+
+
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 

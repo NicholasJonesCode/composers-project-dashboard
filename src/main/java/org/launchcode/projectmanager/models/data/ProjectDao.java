@@ -9,8 +9,10 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface ProjectDoa extends CrudRepository<Project, Integer> {
+public interface ProjectDao extends CrudRepository<Project, Integer> {
 
     List<Project> findByUserId(int userId);
+
+    List<Project> findByIsPublic(boolean isPublic);
 
 }

@@ -4,7 +4,7 @@ import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.Project;
 import org.launchcode.projectmanager.models.Task;
 import org.launchcode.projectmanager.models.User;
-import org.launchcode.projectmanager.models.data.ProjectDoa;
+import org.launchcode.projectmanager.models.data.ProjectDao;
 import org.launchcode.projectmanager.models.data.TaskDao;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.launchcode.projectmanager.models.enums.Mode;
@@ -22,9 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Controller
@@ -35,7 +32,7 @@ public class ProjectsController {
     private UserDao userDao;
 
     @Autowired
-    private ProjectDoa projectDoa;
+    private ProjectDao projectDao;
 
     @Autowired
     private TaskDao taskDao;
@@ -45,7 +42,8 @@ public class ProjectsController {
     public String displayDashboard(Model model, HttpSession session) {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
-        List<Project> last3projects = Tools.getLastXProjects(projectDoa.findByUserId(currentUser.getId()), 3);
+        User theUser = userDao.findOne(currentUser.getId());
+        List<Project> last3projects = Tools.getLastXProjects(theUser.getProjects(), 3);
 
         model.addAttribute("title", currentUser.getUsername() + "'s Dashboard");
         model.addAttribute("projectList", last3projects);
@@ -89,7 +87,7 @@ public class ProjectsController {
         User currentUser = (User) session.getAttribute("currentUserObj");
         User theUser = userDao.findOne(currentUser.getId());
         newProject.setUser(theUser);
-        projectDoa.save(newProject);
+        projectDao.save(newProject);
 
         redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been created", newProject.getTitle()));
 
@@ -99,10 +97,10 @@ public class ProjectsController {
     @RequestMapping(value = "project-overview/{projectId}", method = RequestMethod.GET)
     public String projectOverview(@PathVariable int projectId, Model model) {
 
-        Project theProject = projectDoa.findOne(projectId);
+        Project theProject = projectDao.findOne(projectId);
         model.addAttribute("project", theProject);
 
-        List<Task> thisProjectsTasks = taskDao.findByProjectId(theProject.getId());
+        List<Task> thisProjectsTasks = theProject.getTasks(); //or  taskDao.findByProjectId(theProject.getId());  which one is better lol
         model.addAttribute("tasks", thisProjectsTasks);
 
         if (!model.containsAttribute("task")) {
@@ -118,63 +116,18 @@ public class ProjectsController {
     public ModelAndView createTask(@Valid @ModelAttribute("task") Task task,
                                    Errors errors,
                                    @PathVariable int projectId,
-                                   @RequestParam String dueDate,
-                                   BindingResult bindingResult,
-                                   RedirectAttributes redirectAttributes) {
+                                   RedirectAttributes redirectAttributes,
+                                   final BindingResult bindingResult) {
 
         String path = "redirect:/project/project-overview/" + projectId;
 
-        /*Working on new control flow:
-        *if description has errors and date is empty
-        */
-
-        if (!bindingResult.hasFieldErrors("description") && dueDate.isEmpty()) {
-
-            Project theProject = projectDoa.findOne(projectId);
-            task.setProject(theProject);
-            taskDao.save(task);
-
-            return new ModelAndView(path);
-        }
-
-        if (bindingResult.hasFieldErrors("description") && dueDate.isEmpty()) {
-
+        if (errors.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.task", bindingResult);
             redirectAttributes.addFlashAttribute("task", task);
             return new ModelAndView(path);
         }
 
-        if (bindingResult.hasFieldErrors("description")) {
-
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                LocalDate newDueDate = LocalDate.parse(dueDate, formatter);
-                task.setDueDate(newDueDate);
-
-            } catch (DateTimeParseException dtpe) {
-
-                redirectAttributes.addFlashAttribute("dateError", " - Invalid Date Format!");
-            }
-
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.task", bindingResult);
-            redirectAttributes.addFlashAttribute("task", task);
-            return new ModelAndView(path);
-        }
-
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            LocalDate newDueDate = LocalDate.parse(dueDate, formatter);
-            task.setDueDate(newDueDate);
-
-        } catch (DateTimeParseException dtpe) {
-
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName(path);
-            redirectAttributes.addFlashAttribute("dateError", " - Invalid Date Format!");
-            return modelAndView;
-        }
-
-        Project theProject = projectDoa.findOne(projectId);
+        Project theProject = projectDao.findOne(projectId);
         task.setProject(theProject);
         taskDao.save(task);
 
@@ -192,9 +145,9 @@ public class ProjectsController {
     @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView deleteProject(@PathVariable int projectId, final RedirectAttributes redirectAttributes) {
 
-        String projectName = projectDoa.findOne(projectId).getTitle();
+        String projectName = projectDao.findOne(projectId).getTitle();
 
-        projectDoa.delete(projectId);
+        projectDao.delete(projectId);
 
         redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been removed permanently", projectName));
 
@@ -207,7 +160,7 @@ public class ProjectsController {
         User currentUser = (User) session.getAttribute("currentUserObj");
 
         model.addAttribute("title", "All Projects");
-        model.addAttribute("allProjects", projectDoa.findByUserId(currentUser.getId()));
+        model.addAttribute("allProjects", projectDao.findByUserId(currentUser.getId()));
 
         return "project/all-projects";
     }

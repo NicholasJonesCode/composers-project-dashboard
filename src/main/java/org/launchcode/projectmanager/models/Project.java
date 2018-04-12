@@ -1,5 +1,7 @@
 package org.launchcode.projectmanager.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.launchcode.projectmanager.models.enums.Mode;
 import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
@@ -56,7 +58,15 @@ public class Project {
 
     //One(project)to Many(tasks)
     @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_id")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Task> tasks = new ArrayList<>();
+
+    //One(project)to Many(comments)
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_id")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Comment> comments = new ArrayList<>();
 
 
     public Project() {}
@@ -197,5 +207,21 @@ public class Project {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void addTask(Task task) {
+        this.tasks.add(task);
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
     }
 }

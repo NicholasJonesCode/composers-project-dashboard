@@ -1,5 +1,8 @@
 package org.launchcode.projectmanager.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -25,7 +28,13 @@ public class User {
     //One (User) to Many (projects)
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Project> projects = new ArrayList<>();
+
+    //One (User) to Many (comments)
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private List<Comment> comments = new ArrayList<>();
 
 
     public User() { }
@@ -34,6 +43,9 @@ public class User {
         this.projects.add(project);
     }
 
+    public List<Project> getProjects() {
+        return projects;
+    }
 
     public int getId() {
         return id;

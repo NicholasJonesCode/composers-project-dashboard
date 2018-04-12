@@ -1,5 +1,7 @@
 package org.launchcode.projectmanager.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -13,17 +15,17 @@ public class Task {
     private int id;
 
     @NotNull
-    @Size(min = 1, max = 4000, message = "Description can't be empty, and can't go over 4000")
+    @Size(min = 1, max = 4000, message = "Must have between 1-4000 characters")
     private String description;
 
-
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dueDate;
 
     //Many(tasks)to One(project)
     @ManyToOne(fetch = FetchType.EAGER)
     private Project project;
 
-    public Task() { }
+    public Task() {}
 
 
     public int getId() {

@@ -90,7 +90,8 @@
     </div></p>
 
 
-    <p><span>Primary Time Signature:
+    <p>
+        <span>Primary Time Signature: </span>
 
         <select th:field="*{primary_time_sig_num}">
             <option th:each="sig : ${allTimeSigNum}"
@@ -106,13 +107,14 @@
                     th:value="${sig}"></option>
         </select>
 
-        <span th:errors="*{primary_time_sig_num}" />
-        <span th:errors="*{primary_time_sig_den}" />
+        <span th:errors="*{primary_time_sig_num}" ></span>
+        <span th:errors="*{primary_time_sig_den}" ></span>
 
-    </span></p>
+    </p>
 
 
-    <p><span>Secondary Time Signature:
+    <p>
+        <span>Secondary Time Signature: </span>
 
         <select th:field="*{secondary_time_sig_num}">
             <option th:each="sig : ${allTimeSigNum}"
@@ -128,22 +130,22 @@
                     th:value="${sig}"></option>
         </select>
 
-        <span th:errors="*{secondary_time_sig_num}" />
-        <span th:errors="*{secondary_time_sig_den}" />
+        <span th:errors="*{secondary_time_sig_num}"></span>
+        <span th:errors="*{secondary_time_sig_den}"></span>
 
-    </span></p>
+    </p>
 
 
     <p><div>
         <label th:for="instruments">Instrument Lineup: </label> <br/>
-        <textarea style="font-family:Arial;" rows="7" cols="45" th:field="*{instruments}"></textarea>
+        <textarea id="instruments   " class="textarea" rows="7" cols="45" th:field="*{instruments}"></textarea>
         <span th:errors="*{instruments}"> </span>
     </div></p>
 
 
     <p><div>
         <label th:for="notes">Description/Notes: </label> <br/>
-        <textarea style="font-family:Arial;" rows="12" cols="55" th:field="*{notes}"></textarea>
+        <textarea id="notes" class="textarea" rows="12" cols="55" th:field="*{notes}"></textarea>
         <span th:errors="*{notes}"> </span>
     </div></p>
 

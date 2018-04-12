@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<header th:replace="fragments :: logged-out-header"></header>
+
+<u><h1 th:text="${title}"></h1></u>
+
+
+<div th:each="project : ${allPublicProjects}" class="single-project-wrapper">
+
+    <div>
+        <p><i><a th:text="${project.title}" th:href="'/project/project-overview/' + ${project.id}"></a></i>   <span th:text="'created by ' + ${project.user.username}"></span>  </p>
+
+        <b><span>Description/Notes:</span></b>
+        <br/>
+        <span th:text="${project.notes}"></span>
+        <span th:if="${#lists.isEmpty(project.notes)}">[None]</span>
+    </div>
+
+    <hr/>
+
+    <div>
+        <h3>Comments: </h3>
+
+        <div>
+            <ul th:each="comment : ${project.comments}">
+                <li> <i><span th:text="${comment.contents}"></span></i>  -  <span  th:text="${comment.user.username}"></span> </li>
+            </ul>
+        </div>
+
+        <form action="/blog" method="post" th:object="${comment}">
+            <textarea id="comment" class="textarea" th:field="*{contents}" th:text="Comment..."></textarea>
+            <br/> <span class="comment-error" th:errors="*{contents}"></span> <br/>
+            <input type="submit" value="Post"/>
+            <input type="hidden" th:value="${project.id}" name="projectId" />
+        </form>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
