@@ -1,6 +1,7 @@
 package org.launchcode.projectmanager.Controllers;
 
 
+import org.launchcode.projectmanager.models.CloudConvertAPI.CCAPI_Implement;
 import org.launchcode.projectmanager.models.Comment;
 import org.launchcode.projectmanager.models.Project;
 import org.launchcode.projectmanager.models.User;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class HomeController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String welcome(Model model, HttpSession session) {
+    public String welcome(Model model, HttpSession session) throws IOException {
 
         if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
@@ -42,6 +44,9 @@ public class HomeController {
             User currentUser = (User) session.getAttribute("currentUserObj");
             model.addAttribute("loggedInUser", "Current User: " + (currentUser.getUsername()));
         }
+
+        String htmlString = CCAPI_Implement.getHTMLString();
+        model.addAttribute("testString", htmlString);
 
         LocalDate date = LocalDate.now();
         model.addAttribute("date", String.format("Today's date is: %s %d, %d", date.getMonth(), date.getDayOfMonth(), date.getYear()));
