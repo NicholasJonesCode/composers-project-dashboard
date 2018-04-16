@@ -13,13 +13,15 @@ import java.net.URL;
 
 public class CCAPI_Implement {
 
-    public static String getHttpsProcessId() {
+    //Some keys lol
+    //Nw_KX8DDBah89cWmFDL00xl3sAMp-idcCGGkcoe9iluM2eywWpLSNRrXVx1F0DJVfmv8Lpu8KWm1KvgV02xEiQ
+    //6Z5LV1mfoLKGS6LeYQgRro5k_mj5qzBM9F7EQ6pECtVe3B-9nwuu0Dy6Fvq5eQmyCm9RcJknaZXd0BG8NTmGig
+
+    //get one time process id for the conversion process
+    public static String getHttpsProcessId(String apiKey) {
         RestTemplate restTemplate = new RestTemplate();
 
         final String URLgetProcessId = "https://api.cloudconvert.com/process";
-        final String apiKey = "Nw_KX8DDBah89cWmFDL00xl3sAMp-idcCGGkcoe9iluM2eywWpLSNRrXVx1F0DJVfmv8Lpu8KWm1KvgV02xEiQ";
-        //Optional key:
-        //final String apiKey = "6Z5LV1mfoLKGS6LeYQgRro5k_mj5qzBM9F7EQ6pECtVe3B-9nwuu0Dy6Fvq5eQmyCm9RcJknaZXd0BG8NTmGig";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey);
@@ -36,10 +38,10 @@ public class CCAPI_Implement {
     }
 
     //use that process id url to convert the damn thing
-    public static String getHttpsConversionDownloadLink() {
+    public static String getHttpsConversionDownloadLink(String apiKey) {
 
         RestTemplate restTemplate = new RestTemplate();
-        String url = getHttpsProcessId();
+        String url = getHttpsProcessId(apiKey);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("input", "download");
@@ -51,19 +53,29 @@ public class CCAPI_Implement {
         return "https:" + convertedObject.getOutput().getUrl();
     }
 
-    public static String getHTMLString() throws IOException {
+    public static String getHTMLString(String apiKey) throws IOException {
 
-        URL url = new URL(getHttpsConversionDownloadLink());
+        URL url = new URL(getHttpsConversionDownloadLink(apiKey));
         File file = new File("C:\\Testing\\test.html");
 
         try {
+            //convert download link to local file
             FileUtils.copyURLToFile(url,file, 10000,10000);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        //Convert local file to String
         return FileUtils.readFileToString(file, "UTF-8");
     }
 
+    public static String getLastSuccessfullyConvertedHTMLString() throws IOException {
+
+        File file = new File("C:\\Testing\\test.html");
+
+        //Convert local file to String
+        return FileUtils.readFileToString(file, "UTF-8");
+
+    }
 
 }

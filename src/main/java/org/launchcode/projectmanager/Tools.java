@@ -1,8 +1,14 @@
 package org.launchcode.projectmanager;
 
+import org.apache.commons.io.FileUtils;
 import org.launchcode.projectmanager.models.Project;
+import org.pegdown.PegDownProcessor;
+import org.tautua.markdownpapers.parser.ParseException;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +81,22 @@ public class Tools {
 //        }
 //
 //        return finalList;
+    }
+
+    public static String getRemoteReadmeAndConvertToHTMLString() throws IOException, ParseException {
+
+        URL url = new URL("https://raw.githubusercontent.com/NicholasJonesCode/composers-project-dashboard/master/README.md");
+        File fileInput = new File("C:\\Testing\\test.md");
+        //File fileOutput = new File("C:\\Testing\\testLocalConvert.html");
+
+        FileUtils.copyURLToFile(url, fileInput, 10000, 10000);
+
+        String mdString = FileUtils.readFileToString(fileInput, "UTF-8");
+
+        PegDownProcessor pegDownProcessor = new PegDownProcessor();
+        String result = pegDownProcessor.markdownToHtml(mdString);
+
+        return result;
     }
 
 }

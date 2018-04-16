@@ -95,9 +95,21 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "project-overview/{projectId}", method = RequestMethod.GET)
-    public String projectOverview(@PathVariable int projectId, Model model) {
+    public String projectOverview(@PathVariable int projectId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
         Project theProject = projectDao.findOne(projectId);
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        //if it's private and there's no user, return login
+        if (currentUser == null && !theProject.isPublic()) {
+            return "redirect:/user/login";
+        }
+        //if there's a user, and that user is not the owner of the project, and the project is private, send them back to their dashboard
+        if (currentUser != null && currentUser.getId() != theProject.getUser().getId() && !theProject.isPublic()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to view that");
+            return "redirect:/project/dashboard";
+        }
+
         model.addAttribute("project", theProject);
 
         List<Task> thisProjectsTasks = theProject.getTasks(); //or  taskDao.findByProjectId(theProject.getId());  which one is better lol
@@ -117,7 +129,16 @@ public class ProjectsController {
                                    Errors errors,
                                    @PathVariable int projectId,
                                    RedirectAttributes redirectAttributes,
-                                   final BindingResult bindingResult) {
+                                   final BindingResult bindingResult,
+                                   HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return new ModelAndView("redirect:/project/dashboard");
+        }
 
         String path = "redirect:/project/project-overview/" + projectId;
 
@@ -135,7 +156,15 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "delete-task/{taskId}/{projectId}", method = RequestMethod.POST)
-    public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId) {
+    public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId, HttpSession session, RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return new ModelAndView("redirect:/project/dashboard");
+        }
 
         taskDao.delete(taskId);
 
@@ -143,10 +172,17 @@ public class ProjectsController {
     }
 
     @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView deleteProject(@PathVariable int projectId, final RedirectAttributes redirectAttributes) {
+    public ModelAndView deleteProject(@PathVariable int projectId, HttpSession session, final RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return new ModelAndView("redirect:/project/dashboard");
+        }
 
         String projectName = projectDao.findOne(projectId).getTitle();
-
         projectDao.delete(projectId);
 
         redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been removed permanently", projectName));

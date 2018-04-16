@@ -27,6 +27,10 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        if (request.getRequestURI().contains("project-overview")) {
+            return true;
+        }
+
         if (request.getSession().getAttribute("currentUserObj") == null && !allowedURIs.contains(request.getRequestURI())) {
 
             response.sendRedirect(request.getContextPath() + "/user/login");
