@@ -1,8 +1,10 @@
 package org.launchcode.projectmanager;
 
 import org.apache.commons.io.FileUtils;
+import org.launchcode.projectmanager.models.CloudConvertAPI.CCAPI_Implement;
 import org.launchcode.projectmanager.models.Project;
 import org.pegdown.PegDownProcessor;
+import org.springframework.web.client.HttpClientErrorException;
 import org.tautua.markdownpapers.parser.ParseException;
 
 import javax.xml.bind.DatatypeConverter;
@@ -83,11 +85,24 @@ public class Tools {
 //        return finalList;
     }
 
+    public static List<Project> sortProjectsNewestToOldest(List<Project> projectList) {
+
+        List<Project> finalList = new ArrayList<>();
+
+        for (int i = projectList.size() - 1; i >= 0; i--) {
+            Project newProject = projectList.get(i);
+            finalList.add(newProject);
+        }
+
+        return finalList;
+    }
+
+
     public static String getRemoteReadmeAndConvertToHTMLString() throws IOException, ParseException {
 
         URL url = new URL("https://raw.githubusercontent.com/NicholasJonesCode/composers-project-dashboard/master/README.md");
-        File fileInput = new File("C:\\Testing\\test.md");
-        //File fileOutput = new File("C:\\Testing\\testLocalConvert.html");
+        String outputPath = System.getProperty("user.dir") + File.separator + "src\\main\\resources\\files\\index.md";
+        File fileInput = new File(outputPath);
 
         FileUtils.copyURLToFile(url, fileInput, 10000, 10000);
 
@@ -99,4 +114,23 @@ public class Tools {
         return result;
     }
 
+    public static String getReadmeHtmlAllMethods() throws IOException, ParseException {
+        //This method will try the API with the first key, then the second key, then with the local method
+
+        String htmlReadmeString;
+        try {       //1. try this key first
+            htmlReadmeString = CCAPI_Implement.getHTMLString("Nw_KX8DDBah89cWmFDL00xl3sAMp-idcCGGkcoe9iluM2eywWpLSNRrXVx1F0DJVfmv8Lpu8KWm1KvgV02xEiQ");
+        } catch (HttpClientErrorException e) {
+            try {           //2. use my secondary key if the first one doesn't work lol
+                htmlReadmeString = CCAPI_Implement.getHTMLString("6Z5LV1mfoLKGS6LeYQgRro5k_mj5qzBM9F7EQ6pECtVe3B-9nwuu0Dy6Fvq5eQmyCm9RcJknaZXd0BG8NTmGig");
+            } catch (HttpClientErrorException e2) {   //3. if the api is being a piece of crap, show the info why and implement local md>html conversion method
+                htmlReadmeString = "429 null Cloud Convert API, too many requests, or if 402 null, then I used up all my conversion minutes: " + e2.toString() +
+                        " ...<a href=\"https://cloudconvert.com/api/conversions#bestpractices\">Click here for more info on that</a> <br/> " +
+                        " ...Below is the same file from the same source, grabbed from the remote then converted locally instead of with the CC API: <br/>" +
+                        Tools.getRemoteReadmeAndConvertToHTMLString();
+            }
+        }
+
+        return htmlReadmeString;
+    }
 }

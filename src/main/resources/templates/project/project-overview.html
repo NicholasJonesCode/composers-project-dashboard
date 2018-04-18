@@ -5,70 +5,70 @@
 
 <body>
 
-<h2 th:text="${title}"></h2>
+<u><h1 th:text="${title}"></h1></u>
 
 
 <div>
-    <span><b>Composer: </b></span>
+    <span class="field-tag">Composer: </span>
     <span th:text="${project.user.username}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Title: </b></span>
+    <span class="field-tag">Title: </span>
     <span th:text="${project.title}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Subtitle: </b></span>
+    <span class="field-tag">Subtitle: </span>
     <span th:text="${project.subtitle}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Lyricist: </b></span>
+    <span class="field-tag">Lyricist: </span>
     <span th:text="${project.lyricist}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Primary Music Key: </b></span>
+    <span class="field-tag">Primary Music Key: </span>
     <span th:text="${project.primary_music_key.name}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Secondary Music Key: </b></span>
+    <span class="field-tag">Secondary Music Key: </span>
     <span th:text="${project.secondary_music_key.name}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Mode: </b></span>
+    <span class="field-tag">Mode: </span>
     <span th:text="${project.mode.name}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Genre: </b></span>
+    <span class="field-tag">Genre: </span>
     <span th:text="${project.genre}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Primary Time Signature: </b></span>
+    <span class="field-tag">Primary Time Signature: </span>
     <span th:text="${project.primary_time_sig_num.name}"></span>/<span th:text="${project.primary_time_sig_den.name}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Secondary Time Signature: </b></span>
+    <span class="field-tag">Secondary Time Signature: </span>
     <span th:text="${project.secondary_time_sig_num.name}"></span>/<span th:text="${project.secondary_time_sig_den.name}"></span>
 </div> <br/>
 
 <div>
-    <span><b>Instrument Lineup: </b></span>
+    <span class="field-tag">Instrument Lineup: </span>
     <p th:text="${project.instruments}"></p>
 </div> <br/>
 
 <div>
-    <span><b>Notes/Description: </b></span>
+    <span class="field-tag">Notes/Description: </span>
     <p th:text="${project.notes}"></p>
 </div>
 
-<hr/>
+<hr />
 
 <div>
     <table class="tasks-table">
@@ -96,7 +96,7 @@
 
     <label>Description (required):
         <br/>
-        <textarea th:field="*{description}" rows="2" cols="45"></textarea>
+        <textarea id="description" class="textarea" th:field="*{description}" rows="2" cols="45"></textarea>
     </label>
     <span th:errors="*{description}"></span>
 
@@ -112,7 +112,7 @@
     <input type="submit" value="Submit" />
 </form>
 
-<hr/>
+<hr />
 
 <h3>Options:</h3>
 

@@ -1,4 +1,5 @@
 # Notes
+
 (Please note this this copy of the README is different from the P2 LiftOff assignment, as it is more updated)
 
 ### Overview
@@ -29,7 +30,7 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 ### What I had to learn
 * REST services / Using REST APIs
 * integrating aforementioned with Spring's Rest Template
-* JavaScript (vanilla ES6, mostly)
-* File and local file parsing topics, Java NIO, Apache I/O, general i/o, etc
+* JavaScript
+* File and local file parsing topics (i/o, etc)
 * Spring Security / Basic Encryption
-* Extended learning of the technologies learned in LC101: Spring, Spring JPA, Thymeleaf, CSS... 
+* Continued and extended learning of the technologies I already learned in LC101(especially Spring, Spring JPA, Thymeleaf, CSS)

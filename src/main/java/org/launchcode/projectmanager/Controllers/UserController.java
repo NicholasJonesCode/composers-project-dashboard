@@ -1,6 +1,6 @@
 package org.launchcode.projectmanager.Controllers;
 
-import org.launchcode.projectmanager.Tools;
+import org.launchcode.projectmanager.BCrypt;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,9 @@ public class UserController {
             return "user/create-user";
         }
 
-        newUser.setPassword(Tools.makeSHA256HashString(newUser.getPassword()));
+        String hashedPassword = BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt());
+
+        newUser.setPassword(hashedPassword);
         userDao.save(newUser);
         User currentUser = userDao.findOne(newUser.getId());
         model.addAttribute("new_user_name", currentUser.getUsername());
@@ -142,7 +144,7 @@ public class UserController {
 
         User proposedUser = userDao.findByUsername(username).get(0);
 
-        if (!Tools.checkPassword(password,proposedUser.getPassword())){
+        if (!BCrypt.checkpw(password, proposedUser.getPassword())){
             model.addAttribute("title", "Log In");
             model.addAttribute("passwordError", "Incorrect Password");
             return "user/login";

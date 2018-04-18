@@ -17,6 +17,8 @@ public class CCAPI_Implement {
     //Nw_KX8DDBah89cWmFDL00xl3sAMp-idcCGGkcoe9iluM2eywWpLSNRrXVx1F0DJVfmv8Lpu8KWm1KvgV02xEiQ
     //6Z5LV1mfoLKGS6LeYQgRro5k_mj5qzBM9F7EQ6pECtVe3B-9nwuu0Dy6Fvq5eQmyCm9RcJknaZXd0BG8NTmGig
 
+    private static String outputPath = System.getProperty("user.dir") + File.separator + "src\\main\\resources\\files\\indexReadme.html";
+
     //get one time process id for the conversion process
     public static String getHttpsProcessId(String apiKey) {
         RestTemplate restTemplate = new RestTemplate();
@@ -53,10 +55,11 @@ public class CCAPI_Implement {
         return "https:" + convertedObject.getOutput().getUrl();
     }
 
+    //This is what you wanna call, boi, to get ur magic html string
     public static String getHTMLString(String apiKey) throws IOException {
 
         URL url = new URL(getHttpsConversionDownloadLink(apiKey));
-        File file = new File("C:\\Testing\\test.html");
+        File file = new File(outputPath);
 
         try {
             //convert download link to local file
@@ -71,7 +74,7 @@ public class CCAPI_Implement {
 
     public static String getLastSuccessfullyConvertedHTMLString() throws IOException {
 
-        File file = new File("C:\\Testing\\test.html");
+        File file = new File(outputPath);
 
         //Convert local file to String
         return FileUtils.readFileToString(file, "UTF-8");

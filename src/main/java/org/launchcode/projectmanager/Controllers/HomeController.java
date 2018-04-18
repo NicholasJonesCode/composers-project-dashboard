@@ -2,7 +2,6 @@ package org.launchcode.projectmanager.Controllers;
 
 
 import org.launchcode.projectmanager.Tools;
-import org.launchcode.projectmanager.models.CloudConvertAPI.CCAPI_Implement;
 import org.launchcode.projectmanager.models.Comment;
 import org.launchcode.projectmanager.models.Project;
 import org.launchcode.projectmanager.models.User;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.tautua.markdownpapers.parser.ParseException;
 
@@ -41,26 +39,6 @@ public class HomeController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String welcome(Model model, HttpSession session) throws IOException, ParseException {
 
-        //use my secondary key if the first one doesn't work lol
-        String htmlReadmeString;
-        try {
-            htmlReadmeString = CCAPI_Implement.getHTMLString("Nw_KX8DDBah89cWmFDL00xl3sAMp-idcCGGkcoe9iluM2eywWpLSNRrXVx1F0DJVfmv8Lpu8KWm1KvgV02xEiQ");
-        } catch (HttpClientErrorException e) {
-            try {
-                htmlReadmeString = CCAPI_Implement.getHTMLString("6Z5LV1mfoLKGS6LeYQgRro5k_mj5qzBM9F7EQ6pECtVe3B-9nwuu0Dy6Fvq5eQmyCm9RcJknaZXd0BG8NTmGig");
-            } catch (HttpClientErrorException e2) {
-                htmlReadmeString = "429 null Cloud Convert API, too many requests at once and all that: " + e2.toString() +
-                        " ...<a href=\"https://cloudconvert.com/api/conversions#bestpractices\">Click here for more info on that</a> <br/> " +
-                        " ...Below is the same file from the same source, grabbed from the remote then converted locally instead of with the CC API: <br/>" +
-                        Tools.getRemoteReadmeAndConvertToHTMLString();
-            }
-        }
-
-        model.addAttribute("testString", htmlReadmeString);
-
-        LocalDate date = LocalDate.now();
-        model.addAttribute("date", String.format("Today's date is: %s %d, %d", date.getMonth(), date.getDayOfMonth(), date.getYear()));
-
         if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
         } else {
@@ -68,6 +46,9 @@ public class HomeController {
             model.addAttribute("loggedInUser", "Current User: " + (currentUser.getUsername()));
         }
 
+        model.addAttribute("date", String.format("Today's date is: %s %d, %d", LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), LocalDate.now().getYear())); //Month Day, Year
+        model.addAttribute("title", "Welcome to the Composer's Project Dashboard");
+        model.addAttribute("readme", Tools.getReadmeHtmlAllMethods());
 
         return "index/welcome";
     }
@@ -75,7 +56,7 @@ public class HomeController {
     @RequestMapping(value = "blog", method = RequestMethod.GET)
     String displayBlog(Model model) {
 
-        List<Project> allPublicProjects = projectDao.findByIsPublic(true);
+        List<Project> allPublicProjects = Tools.sortProjectsNewestToOldest(projectDao.findByIsPublic(true));
 
         if (allPublicProjects.size() == 0) {
             model.addAttribute("noProjects", "No projects.... this app is desolate...");
@@ -115,6 +96,7 @@ public class HomeController {
         comment.setProject(projectDao.findOne(projectId));
         comment.setUser(loggedUser);
         commentDao.save(comment);
+
         return "redirect:/blog";
     }
 }

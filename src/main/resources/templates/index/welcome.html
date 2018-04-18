@@ -6,24 +6,22 @@
 <body>
 
 <nav>
-
-    <a href="/blog">Blog</a> |
+    <a href="/blog">Showcase Blog</a> |
     <a href="/user/create-user">Sign Up</a> |
     <a href="/project/dashboard">Dashboard</a> |
     <a href="/user/login">Log In</a> |
     <a href="/user/logout">Log Out</a> |
-
 </nav>
 
 <h3 th:text="${date}"></h3>
 
 <p th:text="${loggedInUser}"></p>
 
-<h1><center>Welcome to the Composer's Project Dashboard!</center></h1>
+<center><h1 th:text="${title}"></h1></center>
 
 <h3><a href="https://github.com/NicholasJonesCode/composers-project-dashboard/blob/master/README.md">SOURCE: https://github.com/NicholasJonesCode/composers-project-dashboard/blob/master/README.md</a></h3>
 
-<p th:utext="${testString}"></p>
+<p th:utext="${readme}"></p>
 
 </body>
 

@@ -119,7 +119,7 @@ public class ProjectsController {
             model.addAttribute("task", new Task());
         }
 
-        model.addAttribute("title", "Project Overview");
+        model.addAttribute("title", "Overview");
 
         return "project/project-overview";
     }
@@ -160,8 +160,11 @@ public class ProjectsController {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
 
-        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+        if (currentUser == null) {
+            return new ModelAndView("redirect:/user/login");
+        }
 
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
             redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
             return new ModelAndView("redirect:/project/dashboard");
         }
