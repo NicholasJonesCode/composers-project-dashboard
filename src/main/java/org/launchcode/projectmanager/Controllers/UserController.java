@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.File;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("user")
@@ -28,6 +30,8 @@ public class UserController {
 
     @Autowired
     private UserDao userDao;
+
+    private static ArrayList<String> tempData = new ArrayList<>();
 
 
     // USER CREATION
@@ -74,6 +78,7 @@ public class UserController {
     public String displayUserProfile(Model model, HttpSession session) {
 
         model.addAttribute("currentUsername", ((User) session.getAttribute("currentUserObj")).getUsername());
+
         return "user/profile-settings";
     }
 
@@ -164,5 +169,27 @@ public class UserController {
         session.removeAttribute("currentUserObj");
 
         return "user/logout-success";
+    }
+
+    @RequestMapping(value = "upload-avatar", method = RequestMethod.GET)
+    public String uploadAvatar(Model model) {
+
+        if (!tempData.isEmpty()) {
+            model.addAttribute("imgPath", tempData.get(0));
+        }
+
+        return "user/upload-avatar";
+    }
+
+    @RequestMapping(value = "upload-avatar", method = RequestMethod.POST)
+    public String processUploadAvatar(@RequestParam File avatarUpload) {
+
+        try {
+            tempData.add(0,avatarUpload.getName() + " and " + avatarUpload.getAbsolutePath());
+        } catch (Exception e) {
+            tempData.add(e.getMessage() + " : " + e.getCause().toString());
+        }
+
+        return "redirect:/user/upload-avatar";
     }
 }

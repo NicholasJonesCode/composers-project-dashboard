@@ -7,87 +7,163 @@
 
 <u><h1 th:text="${title}"></h1></u>
 
+<ul><i><li th:if="${actionMessage}" th:text="${actionMessage}"></li></i></ul>
 
-<div>
-    <span class="field-tag">Composer: </span>
-    <span th:text="${project.user.username}"></span>
-</div> <br/>
+<div class="overview-top-half-wrapper">
+    <div class="info-fields-wrapper">
+        <div>
+            <span class="field-tag">Composer: </span>
+            <span th:text="${project.user.username}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Title: </span>
-    <span th:text="${project.title}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Title: </span>
+            <span th:text="${project.title}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Subtitle: </span>
-    <span th:text="${project.subtitle}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Subtitle: </span>
+            <span th:text="${project.subtitle}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Lyricist: </span>
-    <span th:text="${project.lyricist}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Lyricist: </span>
+            <span th:text="${project.lyricist}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Primary Music Key: </span>
-    <span th:text="${project.primary_music_key.name}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Primary Music Key: </span>
+            <span th:text="${project.primary_music_key.name}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Secondary Music Key: </span>
-    <span th:text="${project.secondary_music_key.name}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Secondary Music Key: </span>
+            <span th:text="${project.secondary_music_key.name}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Mode: </span>
-    <span th:text="${project.mode.name}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Mode: </span>
+            <span th:text="${project.mode.name}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Genre: </span>
-    <span th:text="${project.genre}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Genre: </span>
+            <span th:text="${project.genre}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Primary Time Signature: </span>
-    <span th:text="${project.primary_time_sig_num.name}"></span>/<span th:text="${project.primary_time_sig_den.name}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Primary Time Signature: </span>
+            <span th:text="${project.primary_time_sig_num.name}"></span>/<span th:text="${project.primary_time_sig_den.name}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Secondary Time Signature: </span>
-    <span th:text="${project.secondary_time_sig_num.name}"></span>/<span th:text="${project.secondary_time_sig_den.name}"></span>
-</div> <br/>
+        <div>
+            <span class="field-tag">Secondary Time Signature: </span>
+            <span th:text="${project.secondary_time_sig_num.name}"></span>/<span th:text="${project.secondary_time_sig_den.name}"></span>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Instrument Lineup: </span>
-    <p th:text="${project.instruments}"></p>
-</div> <br/>
+        <div>
+            <span class="field-tag">Instrument Lineup: </span>
+            <p th:text="${project.instruments}"></p>
+        </div> <br/>
 
-<div>
-    <span class="field-tag">Notes/Description: </span>
-    <p th:text="${project.notes}"></p>
+        <div>
+            <span class="field-tag">Notes/Description: </span>
+            <p th:text="${project.notes}"></p>
+        </div>
+    </div>
+
+    <!-- FILES float right -->
+    <div class="files-wrapper">
+        <h3><u>Files/Directories</u></h3>
+
+        <p>
+            Usage: Simply paste the full path of the desired entry into the field, and click Add.
+            Adding paths that do not exist will not be allowed. Files opened will do so with the default system program.
+            Directories are opened standard-like with a file explorer.
+            If a path has been moved or removed since importation, you will be redirected to your default Documents folder in a file explorer.
+            Deleting a file/folder won't put it in the recycle bin or trash on your system, merely remove it from your listings.
+        </p>
+
+        <div>
+            <table class="files-table">
+                <th class="file-head">Filename/Child Directory</th>
+                <th class="full-path-head">Full Path</th>
+                <th class="open-head"></th>
+                <th class="delete-head"></th>
+
+                <tr class="files-row" th:each="path : ${filePaths}">
+
+                    <td class="files-data"> <!-- Filename -->
+                        <span th:if="${@isDirOrFile.isDirectory(path)}">[Dir.]</span>
+                        <span th:if="${@isDirOrFile.isFile(path)}">[File]</span>
+                        <span th:text="${path.getFileName()}"></span>
+                    </td>
+
+                    <td class="files-data" th:text="${path}"></td> <!-- fullpath -->
+
+                    <td class="files-data"> <!-- open -->
+                        <span><form th:action="'/project/open-path/' + ${project.id}" method="post">
+                        <input type="hidden" name="path" th:value="${path}"/>
+                        <input type="submit" value="Open" />
+                        </form></span>
+                    </td>
+
+                    <td class="files-data"> <!-- delete -->
+                        <span><form th:action="'/project/delete-path/' + ${project.id}" method="post">
+                            <input type="hidden" name="path" th:value="${path}" />
+                            <input class="delete-button" type="submit" value="Del." />
+                        </form></span>
+                    </td>
+
+                </tr>
+
+                <!-- In case there's none, make it look like a table not just t-heads -->
+                <tr th:if="${filePaths.isEmpty()}">
+                    <td class="files-data"></td>
+                    <td class="files-data"></td>
+                    <td class="files-data"></td>
+                </tr>
+
+            </table>
+        </div> <br/>
+
+        <form method="post" th:action="'/project/add-path/' + ${project.Id}">
+            <input type="text" name="filePathString" style="width: 500px" />
+            <input type="submit" value="Add" />
+        </form> <br/>
+    </div>
+    <!-- yeet -->
+
 </div>
 
-<hr />
+<hr/>
 
-<div>
-    <table class="tasks-table">
+<div class="overview-bottom-half-wrapper">
+<div class="tasks-manager-wrapper">
+    <div class="tasks-table-wrapper">
+        <table class="tasks-table">
 
-        <caption><b>Ideas/Reminders/Tasks</b></caption>
+            <caption><b>Ideas/Reminders/Tasks</b></caption>
 
-        <th class="tasks-head">Description</th>
-        <th class="tasks-head">Due Date</th>
-        <th class="tasks-head">Delete</th>
+            <th class="description-head">Description</th>
+            <th class="date-head">Due Date</th>
+            <th class="delete-head">Delete</th>
 
-        <tr class="tasks-row" th:each="task : ${tasks}">
-            <td class="tasks-data" th:text="${task.description}"></td>
-            <td class="tasks-data" th:text="${task.dueDate}"></td>
-            <td class="tasks-data"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
-        </tr>
+            <tr class="tasks-row" th:each="task : ${tasks}">
+                <td class="tasks-data" th:text="${task.description}"></td>
+                <td class="tasks-data" th:text="${task.dueDate}"></td>
+                <td class="tasks-data"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
+            </tr>
 
-    </table>
-</div>
+            <!-- In case there's none, make it look like a table not just t-heads -->
+            <tr th:if="${tasks.isEmpty()}">
+                <td class="tasks-data"></td>
+                <td class="tasks-data"></td>
+                <td class="tasks-data"></td>
+            </tr>
 
+        </table>
+    </div>
 <br/>
 
 <h3>Add Entry:</h3>
@@ -110,17 +186,24 @@
 
     <br/> <br/>
     <input type="submit" value="Submit" />
-</form>
+</form> <br/>
 
-<hr />
+</div>
 
-<h3>Options:</h3>
+<div class="overview-actions">
+    <h3>Actions:</h3>
 
-<ul>
-    <li><a href="/project/edit">Edit this profile</a></li>
-    <li><a th:href="'/project/delete-project/' + ${project.Id}">Delete this profile</a></li>
-    <li><a href="/project/dashboard">Go back to the Dashboard</a></li>
-</ul>
+    <ul>
+        <li><a href="/project/edit">Edit this profile</a></li>
+        <li><a th:href="'/project/delete-project/' + ${project.Id}">Delete this profile</a></li>
+        <li><a href="/project/dashboard">Go back to the Dashboard</a></li>
+    </ul>
+</div>
+
+</div>
+
+<hr/>
+
 
 </body>
 

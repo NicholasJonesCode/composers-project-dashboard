@@ -9,6 +9,8 @@ import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,11 +48,16 @@ public class Project {
 
     //private String starting_tempo;
 
+    //private String secondary_temp
+
     private String notes;
 
-    //private List<String> file_paths;
-
     private boolean isPublic = false;
+
+    //Collection of Paths
+    @ElementCollection(targetClass = Path.class)
+    @Convert(converter = PathConverter.class)
+    private List<Path> file_paths = new ArrayList<>();
 
     //Many(projects)to One(user)
     @ManyToOne(fetch = FetchType.EAGER)
@@ -189,6 +196,29 @@ public class Project {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    //FILE PATHS LIST
+    public List<Path> getFile_paths() {
+        //return file_paths.stream().map(Paths::get).collect(Collectors.toList()); //idek what this is for lol
+        return file_paths;
+    }
+
+    public void setFile_paths(List<Path> file_paths) {
+        this.file_paths = file_paths;
+    }
+
+    public void addFile_pathString(String path) {
+        Path newPath = Paths.get(path);
+        file_paths.add(newPath);
+    }
+
+    public void deleteFilePath(Path path) {
+        file_paths.remove(path);
+    }
+
+    public void addFile_pathPath(Path path) {
+        file_paths.add(path);
     }
 
     //BOOLEAN "PUBLIC"

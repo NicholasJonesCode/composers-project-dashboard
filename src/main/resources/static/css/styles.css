@@ -2,26 +2,26 @@
 
 html * {
     color: white;
+    font-family: Candara;
 
-    background-image: url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg"); /*extra darkening on the gradient, for better UX*/
     background-color: white;
+    background-attachment: fixed;
 
     -webkit-background-size: 100% 100%;
     -moz-background-size: 100% 100%;
     -o-background-size: 100% 100%;
     background-size: 100% 100%;
 
-    background-attachment: fixed;
-    font-family: Candara;
 }
 
         /*Text highlighting*/
 *::-moz-selection {
-    background: pink;
+    background: #ff748c; /*its like a dark pink*/
     color: white;
 }
 *::selection {
-    background: pink;
+    background: #ff748c;
     color: white;
 }
 
@@ -39,7 +39,7 @@ hr:after {
     top: -0.8em;
     font-size: 1.5em;
     padding: 0 0.25em;
-    background-image: url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
     -webkit-background-size: 100% 100%;
     -moz-background-size: 100% 100%;
     -o-background-size: 100% 100%;
@@ -51,6 +51,11 @@ option {
     background-color:black;
 }
 
+.delete-button {
+    color: white;
+    background: red;
+}
+
 /*create-project.html*/
 
 .textarea#notes, .textarea#instruments {
@@ -59,17 +64,119 @@ option {
 
 /*project-overview.html*/
 
+    /*GENERIC*/
+.info-fields-wrapper {
+    width:45%;
+    float:left;
+    border: 2px solid white;
+    padding: 5px;
+}
+
+.field-tag {
+    text-decoration: underline;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.overview-top-half-wrapper {
+    float: top;
+    min-height: 550px;
+    overflow: auto;
+    margin-bottom:40px;
+        /*border: 2px solid white; */
+}
+
+.overview-bottom-half-wrapper {
+    width:100%;
+    overflow: hidden;
+    margin-bottom:40px;
+}
+
+    /*FILES*/
+.files-wrapper {
+    width:50%;
+    height: 540px;
+    border: 2px solid white;
+    float: right 1%;
+    padding: 8px;
+    margin-left: 47%;
+    overflow: auto;
+}
+
+.files-table {
+    border: 2px solid white;
+    font-size: 1em;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width:100%;
+    overflow-wrap: break-word;
+}
+
+.file-head {
+    border: 1px solid white;
+    padding: 0.3rem;
+    width: 30%;
+}
+
+.full-path-head {
+    border: 1px solid white;
+    padding: 0.3rem;
+    width: 63%;
+}
+
+.open-head {
+    border: 1px solid white;
+    padding: 0.3rem;
+    width:7%
+}
+
+.files-row {
+}
+
+.files-data {
+    border: 1px solid white;
+    padding: 0.3rem;
+}
+
+    /*TASKS*/
+.tasks-manager-wrapper {
+    width:48%;
+    height:600px;
+    overflow-y: auto;
+    float:left;
+    border: 2px solid white;
+    padding:5px;
+    margin-top: 20px;
+}
+
+.tasks-table-wrapper {
+
+}
+
 .tasks-table {
     border: 2px solid white;
     font-size: 1em;
     padding: 5px 5px;
     border-collapse: collapse;
-    width: 800px;
+    table-layout: fixed;
+    width:100%;
+    overflow-wrap: break-word;
 }
 
-.tasks-head {
+.description-head {
     border: 1px solid white;
     padding: 0.3rem;
+    width:84%
+}
+.date-head {
+    border: 1px solid white;
+    padding: 0.3rem;
+    width: 10%;
+}
+.delete-head {
+    border: 1px solid white;
+    padding: 0.3rem;
+    width: 6%;
 }
 
 .tasks-row {
@@ -85,10 +192,14 @@ option {
     height: 125px;
 }
 
-.field-tag {
-    text-decoration: underline;
-    font-weight: bold;
-    padding-right: 10px;
+.overview-actions {
+    width:250px;
+    height: 300px;
+    border: 2px solid white;
+    float: right 1200px;
+    padding-left: 10px;
+    margin-left: 950px;
+    margin-top: 21px;
 }
 
 /*blog.html*/
@@ -108,7 +219,7 @@ option {
 }
 
 .textarea#comment {
-    font-size:14px;
+    font-size: 14px;
     width: 600px;
     height: 100px;
     padding: 3px;
@@ -119,11 +230,4 @@ option {
 .header-nav-right-side {
     float: right;
     padding-right:930px;
-}
-
-/*all-projects.html*/
-
-.delete-button {
-    color: white;
-    background: red;
 }

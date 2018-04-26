@@ -20,13 +20,13 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        //I let these URIs go through for more detailed validation in the methods themselves
-        if (request.getRequestURI().contains("project-overview") || request.getRequestURI().contains("delete-task")) {
+        //I let this URI go through for more detailed validation in the method itself
+        if (request.getRequestURI().contains("project-overview")) {
             return true;
         }
 
         //if someone isn't logged in, and they go to a path that isn't in the list, then go to the login page
-        if (request.getSession().getAttribute("currentUserObj") == null && !allowedURIs.contains(request.getRequestURI())) {
+        if (request.getSession().getAttribute("currentUserObj") == null && !allowedURIs.contains(request.getRequestURI()) ) {
 
             response.sendRedirect(request.getContextPath() + "/user/login");
             return false;

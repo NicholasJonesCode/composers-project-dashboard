@@ -1,5 +1,6 @@
 package org.launchcode.projectmanager.Controllers;
 
+import org.launchcode.projectmanager.DesktopApi;
 import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.Project;
 import org.launchcode.projectmanager.models.Task;
@@ -22,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 @Controller
@@ -110,15 +113,13 @@ public class ProjectsController {
             return "redirect:/project/dashboard";
         }
 
-        model.addAttribute("project", theProject);
-
-        List<Task> thisProjectsTasks = theProject.getTasks(); //or  taskDao.findByProjectId(theProject.getId());  which one is better lol
-        model.addAttribute("tasks", thisProjectsTasks);
-
         if (!model.containsAttribute("task")) {
             model.addAttribute("task", new Task());
         }
 
+        model.addAttribute("project", theProject);
+        model.addAttribute("tasks", theProject.getTasks()); //List<Task> thisProjectsTasks = theProject.getTasks(); or  taskDao.findByProjectId(theProject.getId());  which one is better lol
+        model.addAttribute("filePaths", theProject.getFile_paths());
         model.addAttribute("title", "Overview");
 
         return "project/project-overview";
@@ -160,10 +161,6 @@ public class ProjectsController {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
 
-        if (currentUser == null) {
-            return new ModelAndView("redirect:/user/login");
-        }
-
         if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
             redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
             return new ModelAndView("redirect:/project/dashboard");
@@ -202,5 +199,56 @@ public class ProjectsController {
         model.addAttribute("allProjects", projectDao.findByUserId(currentUser.getId()));
 
         return "project/all-projects";
+    }
+
+    @RequestMapping(value = "add-path/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String addPath(@PathVariable int projectId, @RequestParam String filePathString, final RedirectAttributes redirectAttributes, HttpSession session) {
+
+        Project theProject = projectDao.findOne(projectId);
+        File fileToAdd = new File(filePathString);
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != theProject.getUser().getId()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return "redirect:/project/dashboard";
+        }
+
+        if (!fileToAdd.exists()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "Path doesn't exist");
+            return "redirect:/project/project-overview/" + projectId;
+        }
+
+        theProject.addFile_pathString(filePathString);
+        projectDao.save(theProject);
+
+        return "redirect:/project/project-overview/" + projectId;
+    }
+
+    @RequestMapping(value = "open-path/{projectId}", method = RequestMethod.POST)
+    public String openFile(@PathVariable int projectId, @RequestParam String path) {
+
+        File fileToOpen = new File(path);
+
+        DesktopApi.open(fileToOpen);
+
+        return "redirect:/project/project-overview/" + projectId;
+    }
+
+    @RequestMapping(value = "delete-path/{projectId}", method = RequestMethod.POST)
+    public String deletePath(@PathVariable int projectId, @RequestParam Path path, final RedirectAttributes redirectAttributes, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        Project currentProject = projectDao.findOne(projectId);
+
+        if (currentUser.getId() != currentProject.getUser().getId()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return "redirect:/project/dashboard";
+        }
+
+        currentProject.deleteFilePath(path);
+        projectDao.save(currentProject);
+
+        redirectAttributes.addFlashAttribute("actionMessage", String.format("Path '%s' has been removed", path.toString()));
+        return "redirect:/project/project-overview/" + projectId;
     }
 }

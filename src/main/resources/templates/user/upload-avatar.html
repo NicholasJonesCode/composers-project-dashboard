@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<p>Upload an image aye</p>
+
+<form method="post">
+
+    <input type="file" accept="image/*" name="avatarUpload" />
+    <input type="submit" value="upload" />
+
+</form>
+
+<div>
+    <p th:text="${imgPath}"></p>
+</div>
+
+</body>
+
+</html>
