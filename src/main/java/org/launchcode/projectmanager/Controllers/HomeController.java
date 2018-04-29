@@ -1,6 +1,5 @@
 package org.launchcode.projectmanager.Controllers;
 
-
 import org.launchcode.projectmanager.Tools;
 import org.launchcode.projectmanager.models.Comment;
 import org.launchcode.projectmanager.models.Project;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.tautua.markdownpapers.parser.ParseException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -37,7 +35,7 @@ public class HomeController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String welcome(Model model, HttpSession session) throws IOException, ParseException {
+    public String welcome(Model model, HttpSession session) throws IOException, org.tautua.markdownpapers.parser.ParseException {
 
         if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");

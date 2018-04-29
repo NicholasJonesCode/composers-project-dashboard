@@ -18,11 +18,21 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
             "/blog"
             ));
 
+    private List<String> forbiddenWhenLoggedIn = new ArrayList<>(Arrays.asList(
+            "/user/login",
+            "/user/create-user"
+    ));
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         //I let this URI go through for more detailed validation in the method itself
         if (request.getRequestURI().contains("project-overview")) {
             return true;
+        }
+
+        //if a user is logged in an they do dis tings, den slap them!
+        if (request.getSession().getAttribute("currentUserObj") != null && forbiddenWhenLoggedIn.contains(request.getRequestURI())) {
+            response.sendRedirect(request.getContextPath() + "/user/dashboard");
         }
 
         //if someone isn't logged in, and they go to a path that isn't in the list, then go to the login page

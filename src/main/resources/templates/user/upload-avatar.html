@@ -5,18 +5,18 @@
 
 <body>
 
-<p>Upload an image aye</p>
+<header th:replace="fragments :: header"></header>
 
-<form method="post">
+<p>Upload a profile picture. Size limit is 5MB. Note: if you try to upload a file that doesnt exist, you will time out to a white page.</p>
 
-    <input type="file" accept="image/*" name="avatarUpload" />
+<i><p style="text-indent: 1.5em;" th:text="${actionMessage}"></p></i>
+
+<form method="post" enctype="multipart/form-data">
+
+    <input type="file" accept="image/*" name="avatarUpload" formenctype="multipart/form-data" />
     <input type="submit" value="upload" />
 
 </form>
-
-<div>
-    <p th:text="${imgPath}"></p>
-</div>
 
 </body>
 

@@ -25,6 +25,11 @@ public class User {
     @Size(min = 6, max = 256)
     private String password;
 
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+
+    private byte[] avatarImage;
+
     //One (User) to Many (projects)
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -66,4 +71,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public byte[] getAvatarImage() {
+        return avatarImage;
+    }
+
+    public void setAvatarImage(byte[] avatarImage) {
+        this.avatarImage = avatarImage;
+    }
+
 }

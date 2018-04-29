@@ -5,30 +5,44 @@
 
 <body>
 
-<h2>Composer Profile and Settings</h2>
+<header th:replace="fragments :: header"></header>
 
-<p th:text="'Your username is: ' + ${currentUsername}"></p>
-<span><form method="get" action="/user/change-username"><input type="submit" value="Change Username"/></form></span>
+<h1>Composer Profile and Settings</h1>
+
+<div class="avatar-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').avatarImage} != null">
+    <img class="avatar" th:src="@{|/user/user-profile/avatar/${currentUser.id}|}" />
+</div>
+
+<b><u><h2 th:text="${currentUser.username}"></h2></u></b>
+
+
+<p><u>Actions:</u></p>
+
+<span>
+    <form method="get" action="/user/change-username">
+        <input type="submit" value="Change Username"/>
+    </form>
+</span> <br/>
 
 <!-- Change password function doesnt work yet -->
-<p th:text="'Your Password: ' + '********' "></p>
-<span><form method="get" action="/user/change-password"><input type="submit" value="Change Password"/></form></span>
+<span>
+    <form method="get" action="/user/change-password">
+        <input type="submit" value="Change Password"/>
+    </form>
+</span> <br/>
 
-<p>Click below to remove your account: </p>
-<form method="get" action="/user/delete-user">
-    <input type="submit" value="Delete" />
-</form>
+<span>
+    <form method="get" action="/user/delete-user">
+        <input type="submit" value="Delete Account" />
+    </form>
+</span> <br/>
 
-<br/>
+<span>
+    <form method="get" action="/user/upload-avatar">
+        <input type="submit" value="Add/Change Avatar" />
+    </form>
+</span>
 
-<p>Go to Dashboard:</p>
-<form method="get" action="/project/dashboard">
-    <input type="submit" value="Go" />
-</form>
-
-<p><a href="/">Go back to the front page</a></p>
-
-<br/>
 
 </body>
 

@@ -5,13 +5,15 @@
 
 <body>
 
-<h2>Change Username</h2> <br/>
+<header th:replace="fragments :: header"></header>
+
+<h2 th:text="${title}"></h2> <br/>
 
 <p>Type in your new name: </p>
 
 <form method="post">
 
-    <input type="text" th:value="${currentUsername}" name="newUsername" />
+    <input type="text" th:value="${currentUser.username}" name="newUsername" />
 
     <input type="submit" value="Change It"/>
 

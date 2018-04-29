@@ -4,20 +4,23 @@ import org.launchcode.projectmanager.BCrypt;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 
 @Controller
+@ComponentScan
 @RequestMapping("user")
 public class UserController {
 
@@ -30,8 +33,6 @@ public class UserController {
 
     @Autowired
     private UserDao userDao;
-
-    private static ArrayList<String> tempData = new ArrayList<>();
 
 
     // USER CREATION
@@ -77,7 +78,8 @@ public class UserController {
     @RequestMapping(value = "user-profile", method = RequestMethod.GET)
     public String displayUserProfile(Model model, HttpSession session) {
 
-        model.addAttribute("currentUsername", ((User) session.getAttribute("currentUserObj")).getUsername());
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        model.addAttribute("currentUser", currentUser);
 
         return "user/profile-settings";
     }
@@ -86,7 +88,8 @@ public class UserController {
     public String displayChangeUsername(Model model, HttpSession session) {
 
         User currentUser = userDao.findOne(((User) session.getAttribute("currentUserObj")).getId());
-        model.addAttribute("currentUsername", currentUser.getUsername());
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("title", "Change Username");
 
         return "user/change-username";
     }
@@ -174,22 +177,43 @@ public class UserController {
     @RequestMapping(value = "upload-avatar", method = RequestMethod.GET)
     public String uploadAvatar(Model model) {
 
-        if (!tempData.isEmpty()) {
-            model.addAttribute("imgPath", tempData.get(0));
-        }
-
         return "user/upload-avatar";
     }
 
     @RequestMapping(value = "upload-avatar", method = RequestMethod.POST)
-    public String processUploadAvatar(@RequestParam File avatarUpload) {
+    public String processUploadAvatar(@RequestParam MultipartFile avatarUpload, HttpSession session, final RedirectAttributes redirectAttributes) throws IOException {
 
-        try {
-            tempData.add(0,avatarUpload.getName() + " and " + avatarUpload.getAbsolutePath());
-        } catch (Exception e) {
-            tempData.add(e.getMessage() + " : " + e.getCause().toString());
+        if (avatarUpload.isEmpty()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You must choose an image; cannot upload nothing");
+            return "redirect:/user/upload-avatar";
         }
 
-        return "redirect:/user/upload-avatar";
+        if (avatarUpload.getSize() > 5242880) {
+            redirectAttributes.addFlashAttribute("actionMessage", "Cannot upload images greater than 5MB");
+            return "redirect:/user/upload-avatar";
+        }
+
+        byte[] imgData = avatarUpload.getBytes();
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        currentUser.setAvatarImage(imgData);
+        userDao.save(currentUser);
+
+        return "redirect:/user/user-profile";
+        //errors to catch:
+        //no such file
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "user-profile/avatar/{currentUser_id}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> getImage(@PathVariable("currentUser_id") int userId) throws IOException {
+
+        byte[] imageContent = userDao.findOne(userId).getAvatarImage(); //get image from DAO based on userId
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.setContentLength(imageContent.length);
+
+        return new HttpEntity<byte[]>(imageContent, headers);
     }
 }

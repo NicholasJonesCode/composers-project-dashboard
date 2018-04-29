@@ -56,6 +56,19 @@ option {
     background: red;
 }
 
+/*.avatar-wrapper {
+    max-width: 150px;
+    max-height: 150px;
+    border: 1px solid white;
+}*/
+
+.avatar {
+    border: 1px solid white;
+    padding: 10px;
+    max-width: 175px;
+    max-height: 175px;
+}
+
 /*create-project.html*/
 
 .textarea#notes, .textarea#instruments {

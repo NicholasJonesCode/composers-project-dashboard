@@ -10,22 +10,18 @@
 
 <body>
 
-<header th:fragment="logged-in-header">
+<header th:fragment="header">
 
-    <nav>
+    <nav th:if="${#ctx.httpSession.getAttribute('currentUserObj')} != null">
         <a href="/">Home</a> |
         <a href="/blog">Showcase Blog</a> |
-        <a href="/dashboard">Dashboard</a> |
+        <a href="/project/dashboard">Dashboard</a> |
         <a href="/user/user-profile">Profile and Settings</a> |
 
         <a class="header-nav-right-side" href="/user/logout">Log Out</a>
     </nav>
 
-</header>
-
-<header th:fragment="logged-out-header">
-
-    <nav>
+    <nav th:if="${#ctx.httpSession.getAttribute('currentUserObj')} == null">
         <a href="/">Home</a> |
         <a href="/blog">Showcase Blog</a>
 
@@ -36,6 +32,7 @@
     </nav>
 
 </header>
+
 
 </body>
 
