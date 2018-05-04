@@ -9,33 +9,33 @@
 
 <u><h1 th:text="${title}"></h1></u>
 
-<div>
+<div th:each="project : ${allProjects}">
 
-    <p th:each="project : ${allProjects}">
-
+    <div class="allprojects-project-wrapper">
         <ul>
-            <li>
-                <a th:href="'/project/project-overview/' + ${project.id}" th:text="${project.title}"></a>
-            </li>
-                Notes: <br/>
-                <span th:text="${project.notes}"></span>
-                <br/>
-                <form th:action="'/project/delete-project/' + ${project.id}" method="post">
-                    <input type="submit" value="Delete" class="delete-button" />
-                </form>
+            <li><h3><a th:href="'/project/project-overview/' + ${project.id}" th:text="${project.title}"></a></h3></li>
         </ul>
 
-    </p>
+        <span><b>Notes/Description:</b></span>
+        <p th:text="${project.notes}"></p>
 
-    <p th:unless="${allProjects.size()}">
-        No projects yet, rip. <a href="/project/create-project">make one lol</a>
-    </p>
+        <form th:action="'/project/delete-project/' + ${project.id}" method="post">
+            <input type="submit" value="Delete" class="delete-button" />
+        </form>
+    </div>
 
     <br/>
-    <hr/>
-    <p><a href="/project/dashboard"> Back to Dashboard</a></p>
-
 </div>
+
+
+<p th:unless="${allProjects.size()}">
+    No projects yet, rip. <a href="/project/create-project">make one lol</a>
+</p>
+
+<br/>
+<hr/>
+<p><a href="/project/dashboard"> Back to Dashboard</a></p>
+
 
 </body>
 

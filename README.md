@@ -16,23 +16,24 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 
 ### Technologies Used
 * Java
-* JavaScript
+* JavaScript (proposed)
 * Springboot Framework
-* HTML/CSS/Thymeleaf
+* Thymeleaf template engine
+* HTML/CSS
 * JPA (Spring JPA)
 * MySQL
 * Hibernate
+* REST
 * IntelliJ IDEA (IDE)
-* Dropbox API
+* Dropbox API (proposed)
 * Cloud Convert API
 * Apache IO utils
-* Pegdown Markdown-to-HTML
-* REST
+* Pegdown Markdown-to-HTML Java library
 
 ### What I had to learn
-* REST services / Using REST APIs
-* integrating aforementioned with Spring's Rest Template
+* REST services / Using REST APIs, Spring's Rest Template
 * JavaScript (vanilla ES6, mostly)
 * File and local file parsing topics, Java NIO, Apache I/O, Desktop API, File uploads, etc.
 * Spring Security / Basic Encryption
+* Spring Sessions / HTTP sessions
 * Extended learning of the technologies learned in LC101: Java, Spring, Spring JPA, Thymeleaf, CSS...

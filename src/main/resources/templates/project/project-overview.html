@@ -9,7 +9,9 @@
 
 <u><h1 th:text="${title}"></h1></u>
 
-<ul><i><li th:if="${actionMessage}" th:text="${actionMessage}"></li></i></ul>
+<form th:action="|/project/edit-project/${project.id}|" method="get"><input type="submit" value="Edit Info" /></form>
+
+<ul><i><li th:if="${actionMessage}" th:text="${actionMessage}" style="color: #42e4ed;"></li></i></ul>
 
 <div class="overview-top-half-wrapper">
     <div class="info-fields-wrapper">
@@ -64,13 +66,22 @@
         </div> <br/>
 
         <div>
-            <span class="field-tag">Instrument Lineup: </span>
+            <span class="field-tag">Instrumentation: </span>
             <p th:text="${project.instruments}"></p>
         </div> <br/>
 
         <div>
             <span class="field-tag">Notes/Description: </span>
-            <p th:text="${project.notes}"></p>
+            <p><form th:action="|/project/update-notes/${project.id}|" method="post">
+                <textarea id="notes" name="notes" th:text="${project.notes}"></textarea> <br/>
+                <input type="submit" value="Save" />
+            </form></p>
+        </div>
+
+        <div>
+            <span>This work is: </span>
+            <span th:if="${project.isPublic()} == true">Public</span>
+            <span th:if="${project.isPublic()} == false">Private</span>
         </div>
     </div>
 
@@ -87,30 +98,30 @@
         </p>
 
         <div>
-            <table class="files-table">
+            <table>
                 <th class="file-head">Filename/Child Directory</th>
                 <th class="full-path-head">Full Path</th>
                 <th class="open-head"></th>
                 <th class="delete-head"></th>
 
-                <tr class="files-row" th:each="path : ${filePaths}">
+                <tr th:each="path : ${filePaths}">
 
-                    <td class="files-data"> <!-- Filename -->
+                    <td> <!-- Filename -->
                         <span th:if="${@isDirOrFile.isDirectory(path)}">[Dir.]</span>
                         <span th:if="${@isDirOrFile.isFile(path)}">[File]</span>
                         <span th:text="${path.getFileName()}"></span>
                     </td>
 
-                    <td class="files-data" th:text="${path}"></td> <!-- fullpath -->
+                    <td th:text="${path}"></td> <!-- fullpath -->
 
-                    <td class="files-data"> <!-- open -->
+                    <td> <!-- open -->
                         <span><form th:action="'/project/open-path/' + ${project.id}" method="post">
                         <input type="hidden" name="path" th:value="${path}"/>
                         <input type="submit" value="Open" />
                         </form></span>
                     </td>
 
-                    <td class="files-data"> <!-- delete -->
+                    <td> <!-- delete -->
                         <span><form th:action="'/project/delete-path/' + ${project.id}" method="post">
                             <input type="hidden" name="path" th:value="${path}" />
                             <input class="delete-button" type="submit" value="Del." />
@@ -121,9 +132,9 @@
 
                 <!-- In case there's none, make it look like a table not just t-heads -->
                 <tr th:if="${filePaths.isEmpty()}">
-                    <td class="files-data"></td>
-                    <td class="files-data"></td>
-                    <td class="files-data"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
 
             </table>
@@ -142,8 +153,7 @@
 
 <div class="overview-bottom-half-wrapper">
 <div class="tasks-manager-wrapper">
-    <div class="tasks-table-wrapper">
-        <table class="tasks-table">
+    <table>
 
             <caption><b>Ideas/Reminders/Tasks</b></caption>
 
@@ -151,42 +161,41 @@
             <th class="date-head">Due Date</th>
             <th class="delete-head">Delete</th>
 
-            <tr class="tasks-row" th:each="task : ${tasks}">
-                <td class="tasks-data" th:text="${task.description}"></td>
-                <td class="tasks-data" th:text="${task.dueDate}"></td>
-                <td class="tasks-data"><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.description}"></td>
+                <td th:text="${task.dueDate}"></td>
+                <td><form method="post" th:action="'/project/delete-task/' + ${task.id} + '/' + ${project.id}"><input type="submit" value="Del."/></form></td>
             </tr>
 
             <!-- In case there's none, make it look like a table not just t-heads -->
             <tr th:if="${tasks.isEmpty()}">
-                <td class="tasks-data"></td>
-                <td class="tasks-data"></td>
-                <td class="tasks-data"></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
 
         </table>
-    </div>
 <br/>
 
 <h3>Add Entry:</h3>
 
 <form method="post" th:object="${task}" th:action="'/project/create-task/' + ${project.Id}">
 
-    <label>Description (required):
-        <br/>
-        <textarea id="description" class="textarea" th:field="*{description}" rows="2" cols="45"></textarea>
-    </label>
-    <span th:errors="*{description}"></span>
+    <p>
+        <label>Description (required):
+            <br/>
+            <textarea id="task-description" th:field="*{description}"></textarea>
+        </label> <br/>
+        <span th:errors="*{description}"></span>
+    </p>
 
-    <br/>
+    <p>
+        <label>Due Date (optional):
+            <br/>
+            <input type="date" th:field="*{dueDate}" size="9" />
+        </label>
+    </p>
 
-    <label>Due Date (optional):
-        <br/>
-        <input type="date" th:field="*{dueDate}" size="9" />
-    </label>
-    <span></span>
-
-    <br/> <br/>
     <input type="submit" value="Submit" />
 </form> <br/>
 
@@ -196,8 +205,8 @@
     <h3>Actions:</h3>
 
     <ul>
-        <li><a href="/project/edit">Edit this profile</a></li>
-        <li><a th:href="'/project/delete-project/' + ${project.Id}">Delete this profile</a></li>
+        <li><a th:href="|/project/edit-project/${project.id}|">Edit this profile's info</a></li>
+        <li><a th:href="|/project/delete-project/${project.Id}|">Delete this profile</a></li>
         <li><a href="/project/dashboard">Go back to the Dashboard</a></li>
     </ul>
 </div>

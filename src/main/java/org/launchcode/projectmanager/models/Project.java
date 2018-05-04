@@ -24,11 +24,11 @@ public class Project {
     @Size(min = 1, message = "Title cannot be empty!")
     private String title;
 
+    @Size(max = 1000)
     private String subtitle;
 
+    @Size(max = 1000)
     private String lyricist;
-
-    private String instruments; //text area
 
     private MusicKeyType primary_music_key;
 
@@ -36,6 +36,7 @@ public class Project {
 
     private Mode mode;
 
+    @Size(max = 1000)
     private String genre;
 
     private TimeSignatureNumerator primary_time_sig_num;
@@ -50,9 +51,13 @@ public class Project {
 
     //private String secondary_temp
 
-    private String notes;
+    @Size(max = 1000000)
+    private String instruments; //text area
 
-    private boolean isPublic = false;
+    @Size(max = 1500000000)
+    private String notes; //text area
+
+    private boolean isPublic;
 
     //Collection of Paths
     @ElementCollection(targetClass = Path.class)
@@ -83,6 +88,7 @@ public class Project {
     public int getId() {
         return id;
     }
+
     //TITLE
     public String getTitle() {
         return title;
@@ -110,15 +116,6 @@ public class Project {
         this.lyricist = lyricist;
     }
 
-    //INSTRUMENTS
-    public String getInstruments() {
-        return instruments;
-    }
-
-    public void setInstruments(String instruments) {
-        this.instruments = instruments;
-    }
-
     //PRIMARY MUSIC KEY
     public MusicKeyType getPrimary_music_key() {
         return primary_music_key;
@@ -135,6 +132,15 @@ public class Project {
 
     public void setSecondary_music_key(MusicKeyType secondary_music_key) {
         this.secondary_music_key = secondary_music_key;
+    }
+
+    //MODE
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     //GENRE
@@ -180,13 +186,13 @@ public class Project {
         this.secondary_time_sig_den = secondary_time_sig_den;
     }
 
-    //MODE
-    public Mode getMode() {
-        return mode;
+    //INSTRUMENTS
+    public String getInstruments() {
+        return instruments;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setInstruments(String instruments) {
+        this.instruments = instruments;
     }
 
     //NOTES
@@ -196,6 +202,15 @@ public class Project {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    //BOOLEAN "PUBLIC"
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 
     //FILE PATHS LIST
@@ -213,21 +228,12 @@ public class Project {
         file_paths.add(newPath);
     }
 
-    public void deleteFilePath(Path path) {
-        file_paths.remove(path);
-    }
-
     public void addFile_pathPath(Path path) {
         file_paths.add(path);
     }
 
-    //BOOLEAN "PUBLIC"
-    public boolean isPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(boolean aPublic) {
-        isPublic = aPublic;
+    public void deleteFilePath(Path path) {
+        file_paths.remove(path);
     }
 
     //MANY TO ONE USER
@@ -239,16 +245,28 @@ public class Project {
         this.user = user;
     }
 
+    //MANY TASKS TO ONE USER
+
     public List<Task> getTasks() {
         return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public void addTask(Task task) {
         this.tasks.add(task);
     }
 
+    //MANY COMMENTS TO ONE USER
+
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public void addComment(Comment comment) {

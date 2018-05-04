@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<h1 th:text="${title}"></h1>
+
+<div class="edit-form-wrapper">
+<form th:object="${project}" method="post">
+
+    <table>
+        <tr>
+            <td>Title</td>
+            <td>
+                <input type="text"  th:value="${currentProject.title}" name="title" id="title" />
+                <span th:errors="*{title}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Subtitle</td>
+            <td>
+                <input type="text" th:value="${currentProject.subtitle}" name="subtitle" id="subtitle" />
+                <span th:errors="*{subtitle}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Lyricist</td>
+            <td>
+                <input type="text" th:value="${currentProject.lyricist}" name="lyricist" id="lyricist" />
+                <span th:errors="*{subtitle}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Primary Music Key</td>
+            <td>
+                <select name="primary_music_key" id="primary_music_key">
+                    <option th:each="key : ${allMusicKeyTypes}"
+                            th:text="${key.name}"
+                            th:value="${key}"
+                            th:selected="${currentProject.primary_music_key == key}"></option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Secondary Music Key</td>
+            <td>
+                <select name="secondary_music_key" id="secondary_music_key">
+                    <option th:each="key : ${allMusicKeyTypes}"
+                            th:text="${key.name}"
+                            th:value="${key}"
+                            th:selected="${currentProject.secondary_music_key == key}"></option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Mode</td>
+            <td>
+                <select name="mode" id="mode">
+                    <option th:each="mode : ${allModes}"
+                            th:text="${mode.name}"
+                            th:value="${mode}"
+                            th:selected="${currentProject.mode == mode}">
+                    </option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Genre</td>
+            <td>
+                <input type="text" th:value="${currentProject.genre}" name="genre" id="genre" />
+                <span th:errors="*{genre}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Primary Time Signature</td>
+            <td>
+                <select name="primary_time_sig_num" id="primary_time_sig_num">
+                    <option th:each="sig : ${allTimeSigNum}"
+                            th:text="${sig.name}"
+                            th:value="${sig}"
+                            th:selected="${currentProject.primary_time_sig_num == sig}">
+                    </option>
+                </select>
+
+                <b> / </b>
+
+                <select name="primary_time_sig_den" id="primary_time_sig_den">
+                    <option th:each="sig : ${allTimeSigDen}"
+                            th:text="${sig.name}"
+                            th:value="${sig}"
+                            th:selected="${currentProject.primary_time_sig_den == sig}">
+                    </option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Secondary Time Signature</td>
+            <td>
+                <select name="secondary_time_sig_num" id="secondary_time_sig_num">
+                    <option th:each="sig : ${allTimeSigNum}"
+                            th:text="${sig.name}"
+                            th:value="${sig}"
+                            th:selected="${currentProject.secondary_time_sig_num == sig}">
+                    </option>
+                </select>
+
+                <b> / </b>
+
+                <select name="secondary_time_sig_den" id="secondary_time_sig_den">
+                    <option th:each="sig : ${allTimeSigDen}"
+                            th:text="${sig.name}"
+                            th:value="${sig}"
+                            th:selected="${currentProject.secondary_time_sig_den == sig}">
+                    </option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Instrumentation</td>
+            <td>
+                <textarea th:text="${currentProject.instruments}" id="instruments" name="instruments"></textarea>
+                <span th:errors="*{instruments}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Notes/Description</td>
+            <td>
+                <textarea th:text="${currentProject.notes}" id="notes" name="notes"></textarea>
+                <span th:errors="*{notes}"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Make this work:</td>
+            <td>
+                <select name="isPublicPrivate">
+                    <option value="public" th:selected="${currentProject.isPublic()} == true">Public</option>
+                    <option value="private" th:selected="${currentProject.isPublic()} == false">Private</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <br/>
+    <input type="submit" value="Confirm" />
+
+</form>
+</div>
+
+</body>
+
+</html>

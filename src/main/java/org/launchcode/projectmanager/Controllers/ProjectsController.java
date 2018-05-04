@@ -41,6 +41,7 @@ public class ProjectsController {
     private TaskDao taskDao;
 
 
+    //DASHBOARD
     @RequestMapping(value = "dashboard", method = RequestMethod.GET)
     public String displayDashboard(Model model, HttpSession session) {
 
@@ -54,10 +55,13 @@ public class ProjectsController {
         return "project/dashboard";
     }
 
+    //PROJECT - CREATE
     @RequestMapping(value = "create-project", method = RequestMethod.GET)
     public String displayCreateProject(Model model) {
 
-        model.addAttribute(new Project());
+        if (!model.containsAttribute("project")) {
+            model.addAttribute(new Project());
+        }
         model.addAttribute("title", "Add Composition");
         model.addAttribute("allModes", Mode.values());
         model.addAttribute("allMusicKeyTypes", MusicKeyType.values());
@@ -69,16 +73,12 @@ public class ProjectsController {
 
     @RequestMapping(value = "create-project", method = RequestMethod.POST)
     public ModelAndView processCreateProject(@ModelAttribute @Valid Project newProject, Errors errors, Model model, @RequestParam String isPublicPrivate,
-                                             HttpSession session, final RedirectAttributes redirectAttributes) {
+                                              final RedirectAttributes redirectAttributes, BindingResult bindingResult, HttpSession session) {
 
         if (errors.hasErrors()) {
-            model.addAttribute(new Project());
-            model.addAttribute("title", "Add Composition");
-            model.addAttribute("allModes", Mode.values());
-            model.addAttribute("allMusicKeyTypes", MusicKeyType.values());
-            model.addAttribute("allTimeSigNum", TimeSignatureNumerator.values());
-            model.addAttribute("allTimeSigDen", TimeSignatureDenominator.values());
-            return new ModelAndView("project/create-project");
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.project", bindingResult);
+            redirectAttributes.addFlashAttribute("project", newProject);
+            return new ModelAndView("redirect:/project/create-project");
         }
 
         if (isPublicPrivate.equals("public")) {
@@ -94,9 +94,97 @@ public class ProjectsController {
 
         redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been created", newProject.getTitle()));
 
-        return new ModelAndView("redirect:/project/dashboard");
+        return new ModelAndView("redirect:/project/project-overview/" + newProject.getId());
     }
 
+    //PROJECT - EDIT
+    @RequestMapping(value = "edit-project/{projectId}", method = RequestMethod.GET)
+    public String editProject(@PathVariable int projectId, Model model, HttpSession session, final RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return "redirect:/project/dashboard";
+        }
+
+        if (!model.containsAttribute("project")) {
+            model.addAttribute("project", new Project());
+        }
+        model.addAttribute("currentProject", projectDao.findOne(projectId));
+        model.addAttribute("title", "Edit Composition");
+        model.addAttribute("allModes", Mode.values());
+        model.addAttribute("allMusicKeyTypes", MusicKeyType.values());
+        model.addAttribute("allTimeSigNum", TimeSignatureNumerator.values());
+        model.addAttribute("allTimeSigDen", TimeSignatureDenominator.values());
+
+        return "project/edit-project";
+    }
+
+    @RequestMapping(value = "edit-project/{projectId}", method = RequestMethod.POST)
+    public ModelAndView processEditProject(@Valid @ModelAttribute("project") Project editedProject, Errors errors, @PathVariable int projectId, @RequestParam String isPublicPrivate,
+                                           final RedirectAttributes redirectAttributes, BindingResult bindingResult, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return new ModelAndView("redirect:/project/dashboard");
+        }
+
+        if (errors.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.project", bindingResult);
+            redirectAttributes.addFlashAttribute("project", editedProject);
+            return new ModelAndView("redirect:/project/edit-project/" + projectId);
+        }
+
+        Project projectToEdit = projectDao.findOne(projectId);
+
+        projectToEdit.setTitle(editedProject.getTitle());
+        projectToEdit.setSubtitle(editedProject.getSubtitle());
+        projectToEdit.setLyricist(editedProject.getLyricist());
+        projectToEdit.setPrimary_music_key(editedProject.getPrimary_music_key());
+        projectToEdit.setSecondary_music_key(editedProject.getSecondary_music_key());
+        projectToEdit.setMode(editedProject.getMode());
+        projectToEdit.setGenre(editedProject.getGenre());
+        projectToEdit.setPrimary_time_sig_num(editedProject.getPrimary_time_sig_num());
+        projectToEdit.setPrimary_time_sig_den(editedProject.getPrimary_time_sig_den());
+        projectToEdit.setSecondary_time_sig_num(editedProject.getSecondary_time_sig_num());
+        projectToEdit.setSecondary_time_sig_den(editedProject.getSecondary_time_sig_den());
+        projectToEdit.setInstruments(editedProject.getInstruments());
+        projectToEdit.setNotes(editedProject.getNotes());
+        if (isPublicPrivate.equals("public")) {
+            projectToEdit.setPublic(true);
+        } else {
+            projectToEdit.setPublic(false);
+        }
+
+        projectDao.save(projectToEdit);
+
+        return new ModelAndView("redirect:/project/project-overview/" + projectId);
+    }
+
+    // PROJECT - EDIT NOTES
+    @RequestMapping(value = "update-notes/{projectId}", method = RequestMethod.POST)
+    public String updateNotes(@PathVariable int projectId, @RequestParam String notes, final RedirectAttributes redirectAttributes, HttpSession session) {
+
+        Project theProject = projectDao.findOne(projectId);
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != theProject.getUser().getId()) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return "redirect:/project/dashboard";
+        }
+
+        theProject.setNotes(notes);
+
+        projectDao.save(theProject);
+
+        redirectAttributes.addFlashAttribute("actionMessage", "Saved changes");
+        return "redirect:/project/project-overview/" + projectId;
+    }
+
+    //PROJECT - OVERVIEW
     @RequestMapping(value = "project-overview/{projectId}", method = RequestMethod.GET)
     public String projectOverview(@PathVariable int projectId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
@@ -125,6 +213,39 @@ public class ProjectsController {
         return "project/project-overview";
     }
 
+    // PROJECT - 'ALL' LIST
+    @RequestMapping(value = "all-projects", method = RequestMethod.GET)
+    public String displayAllProjects(Model model, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        model.addAttribute("title", "All Projects");
+        model.addAttribute("allProjects", projectDao.findByUserId(currentUser.getId()));
+
+        return "project/all-projects";
+    }
+
+    // PROJECT - DELETE
+    @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView deleteProject(@PathVariable int projectId, HttpSession session, final RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+
+        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
+
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
+            return new ModelAndView("redirect:/project/dashboard");
+        }
+
+        String projectName = projectDao.findOne(projectId).getTitle();
+        projectDao.delete(projectId);
+
+        redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been removed permanently", projectName));
+
+        return new ModelAndView("redirect:/project/dashboard");
+    }
+
+    //TASK - CREATE
     @RequestMapping(value = "create-task/{projectId}", method = RequestMethod.POST)
     public ModelAndView createTask(@Valid @ModelAttribute("task") Task task,
                                    Errors errors,
@@ -156,6 +277,7 @@ public class ProjectsController {
         return new ModelAndView(path);
     }
 
+    // TASK - DELETE
     @RequestMapping(value = "delete-task/{taskId}/{projectId}", method = RequestMethod.POST)
     public ModelAndView deleteTask(@PathVariable int taskId, @PathVariable int projectId, HttpSession session, RedirectAttributes redirectAttributes) {
 
@@ -171,36 +293,7 @@ public class ProjectsController {
         return new ModelAndView("redirect:/project/project-overview/" + projectId);
     }
 
-    @RequestMapping(value = "delete-project/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView deleteProject(@PathVariable int projectId, HttpSession session, final RedirectAttributes redirectAttributes) {
-
-        User currentUser = (User) session.getAttribute("currentUserObj");
-
-        if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
-
-            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
-            return new ModelAndView("redirect:/project/dashboard");
-        }
-
-        String projectName = projectDao.findOne(projectId).getTitle();
-        projectDao.delete(projectId);
-
-        redirectAttributes.addFlashAttribute("actionMessage", String.format("The project '%s' has been removed permanently", projectName));
-
-        return new ModelAndView("redirect:/project/dashboard");
-    }
-
-    @RequestMapping(value = "all-projects", method = RequestMethod.GET)
-    public String displayAllProjects(Model model, HttpSession session) {
-
-        User currentUser = (User) session.getAttribute("currentUserObj");
-
-        model.addAttribute("title", "All Projects");
-        model.addAttribute("allProjects", projectDao.findByUserId(currentUser.getId()));
-
-        return "project/all-projects";
-    }
-
+    // FILES - ADD PATH
     @RequestMapping(value = "add-path/{projectId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String addPath(@PathVariable int projectId, @RequestParam String filePathString, final RedirectAttributes redirectAttributes, HttpSession session) {
 
@@ -224,6 +317,7 @@ public class ProjectsController {
         return "redirect:/project/project-overview/" + projectId;
     }
 
+    //FILES - OPEN PATH
     @RequestMapping(value = "open-path/{projectId}", method = RequestMethod.POST)
     public String openFile(@PathVariable int projectId, @RequestParam String path) {
 
@@ -234,6 +328,7 @@ public class ProjectsController {
         return "redirect:/project/project-overview/" + projectId;
     }
 
+    //FILES - DELETE PATH
     @RequestMapping(value = "delete-path/{projectId}", method = RequestMethod.POST)
     public String deletePath(@PathVariable int projectId, @RequestParam Path path, final RedirectAttributes redirectAttributes, HttpSession session) {
 

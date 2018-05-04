@@ -12,7 +12,7 @@ public class Comment {
     private int id;
 
     @NotNull
-    @Size(min = 1, max = 1000)
+    @Size(min = 1, max = 2000)
     private String contents;
 
     //Many(comments) to One(User)

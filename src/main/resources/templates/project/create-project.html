@@ -11,25 +11,6 @@
 
 <form method="post" th:object="${project}">
 
-    <!--
-    <div>
-        <label th:for=""></label>
-        <input type="text" th:field="*{}"/>
-        <span th:errors="*{}"> </span>
-    </div>
-    -->
-
-    <!--
-    <div>
-        <label th:for=""></label>
-        <select th:field="*{}">
-            <option th:each="cheeseType : ${cheeseTypes}"
-                    th:text="${cheeseType.name}"
-                    th:value="${cheeseType}"></option>
-        </select>
-    </div>
-    -->
-
     <p><div>
         <label th:for="title">Title: </label>
         <input type="text" th:field="*{title}"/>
@@ -69,7 +50,7 @@
                     th:text="${key.name}"
                     th:value="${key}"></option>
         </select>
-        <span th:errors="*{secondary_music_key}" />
+    <span th:errors="*{secondary_music_key}"></span>
     </div></p>
 
 
@@ -80,7 +61,7 @@
                     th:text="${mode.name}"
                     th:value="${mode}"></option>
         </select>
-        <span th:errors="*{mode}" />
+    <span th:errors="*{mode}"></span>
     </div></p>
 
 
@@ -138,15 +119,15 @@
 
 
     <p><div>
-        <label th:for="instruments">Instrument Lineup: </label> <br/>
-        <textarea id="instruments   " class="textarea" rows="7" cols="45" th:field="*{instruments}"></textarea>
+        <label th:for="instruments">Instrumentation: </label> <br/>
+        <textarea id="instruments" th:field="*{instruments}"></textarea>
         <span th:errors="*{instruments}"> </span>
     </div></p>
 
 
     <p><div>
-        <label th:for="notes">Description/Notes: </label> <br/>
-        <textarea id="notes" class="textarea" rows="12" cols="55" th:field="*{notes}"></textarea>
+        <label th:for="notes">Notes/Description: </label> <br/>
+        <textarea id="notes" th:field="*{notes}"></textarea>
         <span th:errors="*{notes}"> </span>
     </div></p>
 
@@ -154,7 +135,7 @@
     <p><div>
         <label th:for="isPublicPrivate">Make this work: </label>
         <select name="isPublicPrivate">
-            <option value="private">Private</option>
+            <option value="private" selected="selected">Private</option>
             <option value="public">Public</option>
         </select>
     </div></p>

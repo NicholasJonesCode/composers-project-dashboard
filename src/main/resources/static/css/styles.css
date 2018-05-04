@@ -56,11 +56,25 @@ option {
     background: red;
 }
 
-/*.avatar-wrapper {
-    max-width: 150px;
-    max-height: 150px;
+table {
+    border: 2px solid white;
+    font-size: 1em;
+    padding: 5px 5px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width:100%;
+    overflow-wrap: break-word;
+}
+
+td {
     border: 1px solid white;
-}*/
+    padding: 0.3rem;
+}
+
+th {
+    border: 1px solid white;
+    padding: 0.3rem;
+}
 
 .avatar {
     border: 1px solid white;
@@ -69,10 +83,30 @@ option {
     max-height: 175px;
 }
 
-/*create-project.html*/
+textarea#notes {
+    height: 250px;
+    width: 675px;
+}
 
-.textarea#notes, .textarea#instruments {
-    font-size:15px;
+textarea#instruments {
+    height: 160px;
+    width: 450px;
+}
+
+input[type=text], input[type=password] {
+    border: 1px solid white;
+    -webkit-box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    -moz-box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.2);
+
+    width: 275px;
 }
 
 /*project-overview.html*/
@@ -108,7 +142,7 @@ option {
     /*FILES*/
 .files-wrapper {
     width:50%;
-    height: 540px;
+    height: 640px;
     border: 2px solid white;
     float: right 1%;
     padding: 8px;
@@ -116,39 +150,16 @@ option {
     overflow: auto;
 }
 
-.files-table {
-    border: 2px solid white;
-    font-size: 1em;
-    border-collapse: collapse;
-    table-layout: fixed;
-    width:100%;
-    overflow-wrap: break-word;
-}
-
 .file-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width: 30%;
 }
 
 .full-path-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width: 63%;
 }
 
 .open-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width:7%
-}
-
-.files-row {
-}
-
-.files-data {
-    border: 1px solid white;
-    padding: 0.3rem;
 }
 
     /*TASKS*/
@@ -162,47 +173,19 @@ option {
     margin-top: 20px;
 }
 
-.tasks-table-wrapper {
-
-}
-
-.tasks-table {
-    border: 2px solid white;
-    font-size: 1em;
-    padding: 5px 5px;
-    border-collapse: collapse;
-    table-layout: fixed;
-    width:100%;
-    overflow-wrap: break-word;
-}
-
 .description-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width:84%
 }
 .date-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width: 10%;
 }
 .delete-head {
-    border: 1px solid white;
-    padding: 0.3rem;
     width: 6%;
 }
 
-.tasks-row {
-}
-
-.tasks-data {
-    border: 1px solid white;
-    padding: 0.3rem;
-}
-
-.textarea#description {
-    width: 600px;
+textarea#task-description {
     height: 125px;
+    width: 650px;
 }
 
 .overview-actions {
@@ -213,6 +196,11 @@ option {
     padding-left: 10px;
     margin-left: 950px;
     margin-top: 21px;
+}
+
+/*edit-project.html*/
+.edit-form-wrapper {
+    width: 80%;
 }
 
 /*blog.html*/
@@ -236,6 +224,14 @@ option {
     width: 600px;
     height: 100px;
     padding: 3px;
+}
+
+/*all-projects.html*/
+.allprojects-project-wrapper {
+    border: 1px solid white;
+    max-width: 70%;
+    word-wrap: break-word;
+    padding: 8px;
 }
 
 /*fragments.html*/
