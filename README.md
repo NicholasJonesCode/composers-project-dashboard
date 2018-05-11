@@ -37,3 +37,4 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 * Spring Security / Basic Encryption
 * Spring Sessions / HTTP sessions
 * Extended learning of the technologies learned in LC101: Java, Spring, Spring JPA, Thymeleaf, CSS...
+* Creating custom validation annotations like the ones in javax.validation.constraints

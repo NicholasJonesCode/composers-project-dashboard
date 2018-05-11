@@ -4,7 +4,10 @@ html * {
     color: white;
     font-family: Candara;
 
-    background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg"); /*extra darkening on the gradient, for better UX*/
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    /*"https://static.zerochan.net/The.Flower.of.Immorality.full.921646.jpg"  <--  Kagamine Rin/Len fan pic*/
+    /*"https://images5.alphacoders.com/712/thumb-1920-712962.jpg" <-- zelda-ocarina-forest pic */
+    /*extra darkening on the gradient, for better UX 'rgba(0, 0, 0, 0.5)' or similar */
     background-color: white;
     background-attachment: fixed;
 
@@ -39,7 +42,7 @@ hr:after {
     top: -0.8em;
     font-size: 1.5em;
     padding: 0 0.25em;
-    background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
     -webkit-background-size: 100% 100%;
     -moz-background-size: 100% 100%;
     -o-background-size: 100% 100%;
@@ -78,14 +81,14 @@ th {
 
 .avatar {
     border: 1px solid white;
-    padding: 10px;
-    max-width: 175px;
-    max-height: 175px;
+    padding: 8px;
+    max-width: 225px;
+    max-height: 225px;
 }
 
 textarea#notes {
     height: 250px;
-    width: 675px;
+    width: 700px;
 }
 
 textarea#instruments {
@@ -113,16 +116,15 @@ input[type=text], input[type=password] {
 
     /*GENERIC*/
 .info-fields-wrapper {
-    width:45%;
+    width: 46%;
     float:left;
-    border: 2px solid white;
-    padding: 5px;
 }
 
 .field-tag {
     text-decoration: underline;
     font-weight: bold;
     padding-right: 10px;
+    width: 23%;
 }
 
 .overview-top-half-wrapper {
@@ -139,15 +141,32 @@ input[type=text], input[type=password] {
     margin-bottom:40px;
 }
 
+.overview-notes-wrapper {
+    float: right;
+    width: 51%;
+    border: 2px solid white;
+    margin-right: 1%;
+    padding: 5px;
+}
+
+textarea#overview-notes {
+    height: 450px;
+    width: 100%;
+}
+
+.action-buttons {
+    padding: 0.5%;
+}
+
     /*FILES*/
 .files-wrapper {
-    width:50%;
+    width: 50%;
     height: 640px;
     border: 2px solid white;
-    float: right 1%;
+    float: right;
     padding: 8px;
-    margin-left: 47%;
     overflow: auto;
+    margin-top: 5px;
 }
 
 .file-head {
@@ -165,12 +184,12 @@ input[type=text], input[type=password] {
     /*TASKS*/
 .tasks-manager-wrapper {
     width:48%;
-    height:600px;
+    height:645px;
     overflow-y: auto;
     float:left;
     border: 2px solid white;
     padding:5px;
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 .description-head {
@@ -207,7 +226,7 @@ textarea#task-description {
 
 .single-project-wrapper {
     width: 950px;
-    border: 3px solid white;
+    border: 2px solid white;
     padding: 12px;
 }
 
@@ -224,6 +243,25 @@ textarea#task-description {
     width: 600px;
     height: 100px;
     padding: 3px;
+}
+
+.comment {
+    max-width: 90%;
+    margin-left: 2%;
+    margin-bottom: 2.5%;
+}
+
+.comment-contents {
+    padding-left: 1.5%;
+    font-style :italic;
+}
+
+.post-avatar {
+    padding: 2px;
+    max-width: 50px;
+    max-height: 50px;
+    float: left;
+    margin-right: 5px;
 }
 
 /*all-projects.html*/

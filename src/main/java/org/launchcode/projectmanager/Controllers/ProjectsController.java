@@ -160,7 +160,7 @@ public class ProjectsController {
         }
 
         projectDao.save(projectToEdit);
-
+        redirectAttributes.addFlashAttribute("actionMessage", "Successfully Edited Info");
         return new ModelAndView("redirect:/project/project-overview/" + projectId);
     }
 
@@ -300,6 +300,7 @@ public class ProjectsController {
         Project theProject = projectDao.findOne(projectId);
         File fileToAdd = new File(filePathString);
         User currentUser = (User) session.getAttribute("currentUserObj");
+        String redirectToProject = "redirect:/project/project-overview/" + projectId;
 
         if (currentUser.getId() != theProject.getUser().getId()) {
             redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
@@ -308,13 +309,18 @@ public class ProjectsController {
 
         if (!fileToAdd.exists()) {
             redirectAttributes.addFlashAttribute("actionMessage", "Path doesn't exist");
-            return "redirect:/project/project-overview/" + projectId;
+            return redirectToProject;
+        }
+
+        if (projectDao.findOne(projectId).getFile_paths().contains(fileToAdd.toPath())) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You've already added this path");
+            return redirectToProject;
         }
 
         theProject.addFile_pathString(filePathString);
         projectDao.save(theProject);
 
-        return "redirect:/project/project-overview/" + projectId;
+        return redirectToProject;
     }
 
     //FILES - OPEN PATH

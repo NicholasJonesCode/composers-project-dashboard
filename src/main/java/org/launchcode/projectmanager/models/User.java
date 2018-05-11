@@ -2,6 +2,7 @@ package org.launchcode.projectmanager.models;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.launchcode.projectmanager.UniqueUsername;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,8 +18,8 @@ public class User {
     private int id;
 
     @NotNull
-    @Size(min=3, max = 25)
-    @Column(unique = true)
+    @Size(min=3, max = 35)
+    @UniqueUsername
     private String username;
 
     @NotNull
@@ -27,7 +28,6 @@ public class User {
 
     @Lob
     @Basic(fetch = FetchType.EAGER)
-
     private byte[] avatarImage;
 
     //One (User) to Many (projects)
