@@ -9,8 +9,15 @@
 
 <h1>Composer Profile and Settings</h1>
 
-<div class="avatar-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').avatarImage} != null">
+<ul><i><li th:if="${statusMessage}" th:text="${statusMessage}" style="color: #42e4ed;"></li></i></ul>
+
+
+<div th:if="${#ctx.httpSession.getAttribute('currentUserObj').avatarImage} != null">
     <img class="avatar" th:src="@{|/user/user-profile/avatar/${currentUser.id}|}" />
+</div>
+
+<div th:if="${#ctx.httpSession.getAttribute('currentUserObj').avatarImage} == null">
+    <div class="avatar">NO AVATAR SELECTED</div>
 </div>
 
 <b><u><h2 th:text="${currentUser.username}"></h2></u></b>
@@ -41,8 +48,38 @@
     <form method="get" action="/user/upload-avatar">
         <input type="submit" value="Add/Change Avatar" />
     </form>
-</span>
+</span> <br/>
 
+<hr/>
+
+<div class="dbx-all"><center>
+
+    <img class="dbx-logo-image" src="http://www.radicalhub.com/wp-content/uploads/2015/06/dropbox.png" />
+    <br/>
+
+    <p th:if="${#ctx.httpSession.getAttribute('currentUserObj').dbxAccessToken} == null">
+        No Dropbox currently connected...
+        <form action="/user/dropbox-auth-start" method="post">
+            <input class="dbx-button" type="submit" value="Connect To Dropbox" />
+        </form>
+    </p>
+
+    <div th:if="${#ctx.httpSession.getAttribute('currentUserObj').dbxAccessToken} != null">
+
+        <u>Connected!</u>
+
+        <p><i><b>
+            <span th:text="${dbxAccountObj.getName().getDisplayName()}"></span> <br/>
+            <span th:text="${dbxAccountObj.getEmail()}"></span>
+        </b></i></p>
+
+        <form action="/user/dropbox-disconnect" method="post">
+            <input class="dbx-button" type="submit" value="Disconnect My Account" />
+        </form>
+
+    </div>
+
+    </center></div>
 
 </body>
 

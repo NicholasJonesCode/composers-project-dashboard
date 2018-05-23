@@ -1,5 +1,8 @@
 package org.launchcode.projectmanager.Controllers;
 
+import com.dropbox.core.*;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.users.FullAccount;
 import org.launchcode.projectmanager.BCrypt;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -76,10 +81,17 @@ public class UserController {
 
     // USER MANAGEMENT
     @RequestMapping(value = "user-profile", method = RequestMethod.GET)
-    public String displayUserProfile(Model model, HttpSession session) {
+    public String displayUserProfile(Model model, HttpSession session) throws DbxException {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
         model.addAttribute("currentUser", currentUser);
+
+        if(currentUser.getDbxAccessToken() != null) {
+            DbxRequestConfig config = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
+            DbxClientV2 client = new DbxClientV2(config, currentUser.getDbxAccessToken());
+            FullAccount currentAccount = client.users().getCurrentAccount();
+            model.addAttribute("dbxAccountObj", currentAccount);
+        }
 
         return "user/profile-settings";
     }
@@ -101,7 +113,7 @@ public class UserController {
         currentUser.setUsername(newUsername);
         userDao.save(currentUser);
 
-                //SESSION MANAGEMENT
+                //UPDATE SESSION
         session.setAttribute("currentUserObj", currentUser);
 
         return "redirect:user-profile";
@@ -115,12 +127,12 @@ public class UserController {
     @RequestMapping(value = "delete-user", method = RequestMethod.POST)
     public String processDeleteUser(HttpSession session) {
 
-        Integer currentUserId = ((User) session.getAttribute("currentUserObj")).getId();
-        User currentUser = userDao.findOne(currentUserId);
+        User currentUser = userDao.findOne( ((User)session.getAttribute("currentUserObj")).getId() );
         userDao.delete(currentUser);
 
                 //DELETE SESSION
-        session.removeAttribute("currentUserObj");
+        session.invalidate();
+
 
         return "redirect:/";
     }
@@ -157,7 +169,7 @@ public class UserController {
             model.addAttribute("passwordError", "Incorrect Password");
             return "user/login";
         }
-                //SESSION MANAGEMENT
+                //SESSION CREATION
         session.setAttribute("currentUserObj", proposedUser);
 
         model.addAttribute("new_user_name", proposedUser.getUsername());
@@ -169,7 +181,7 @@ public class UserController {
     public String logOut(HttpSession session) {
 
                 //SESSION DELETE
-        session.removeAttribute("currentUserObj");
+        session.invalidate();
 
         return "user/logout-success";
     }
@@ -216,4 +228,90 @@ public class UserController {
 
         return new HttpEntity<byte[]>(imageContent, headers);
     }
+
+
+    // ----------------- DROPBOX STUFF -------------------
+
+    //INFO AND TOOLS FOR START AND FINISH METHODS
+    final String APP_KEY = "693ssuwifm7m4dy";
+    final String APP_SECRET = "p77sloa52v6b12x";
+    final String redirectUri = "http://localhost:8080/user/dropbox-auth-finish";
+
+        //set up the config for the authentication flow
+    DbxRequestConfig dbxRequestConfig = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
+    DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
+    DbxWebAuth auth = new DbxWebAuth(dbxRequestConfig, appInfo);
+
+    @RequestMapping(value = "dropbox-auth-start", method = RequestMethod.POST)
+    public String startDbxAuth(HttpSession session) throws IOException {
+
+        //set up a place in the session to put
+        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, "dropbox-auth-csrf-token");
+
+        //build an auth request
+        DbxWebAuth.Request authRequest = DbxWebAuth.newRequestBuilder().withRedirectUri(redirectUri, csrfTokenStore).build();
+
+        //start authorization
+        String authorizePageUrl = auth.authorize(authRequest);
+
+        // Redirect the user to the Dropbox website so they can approve our application.
+        // The Dropbox website will send them back to the user profile when they're done.
+        return "redirect:" + authorizePageUrl;
+    }
+
+    @RequestMapping(value = "dropbox-auth-finish", method = {RequestMethod.GET, RequestMethod.POST})
+    public String finishDbxAuth(HttpSession session, HttpServletRequest request, HttpServletResponse response, final RedirectAttributes redirectAttributes) throws IOException {
+
+        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, "dropbox-auth-csrf-token");
+        DbxAuthFinish authFinish = null;
+
+        try {
+            authFinish = auth.finishFromRedirect(redirectUri, csrfTokenStore, request.getParameterMap());
+
+        } catch (DbxWebAuth.BadRequestException ex) {
+            response.sendError(400, "On /dropbox-auth-finish: Bad request: " + ex.getMessage());
+
+        } catch (DbxWebAuth.BadStateException ex) {
+            // Send them back to the start of the auth flow.
+            return "redirect:/user/dropbox-auth-start";
+
+        } catch (DbxWebAuth.CsrfException ex) {
+            response.sendError(403, "Forbidden." + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
+
+        } catch (DbxWebAuth.NotApprovedException ex) {
+            // When Dropbox asked "Do you want to allow this app to access your Dropbox account?", the user clicked "No".
+            redirectAttributes.addFlashAttribute("statusMessage", "You denied access to your Dropbox account, authorization failed");
+            return "redirect:/user/user-profile";
+
+        } catch (DbxWebAuth.ProviderException ex) {
+            response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
+
+        } catch (DbxException ex) {
+            response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
+        }
+
+        //FINISHED!!!!!
+        String accessToken = authFinish.getAccessToken();
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        currentUser.setDbxAccessToken(accessToken);
+        userDao.save(currentUser);
+
+        redirectAttributes.addFlashAttribute("statusMessage", "You successfully connected your Dropbox");
+
+        return "redirect:/user/user-profile";
+    }
+
+    @RequestMapping(value = "dropbox-disconnect", method = {RequestMethod.POST})
+    String dbxDisconnect(HttpSession session, final RedirectAttributes redirectAttributes) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        currentUser.setDbxAccessToken(null);
+        userDao.save(currentUser);
+
+        redirectAttributes.addFlashAttribute("statusMessage", "You successfully disconnected your Dropbox");
+
+        return "redirect:/user/user-profile";
+    }
+
 }

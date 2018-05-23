@@ -228,10 +228,6 @@ public class Project {
         file_paths.add(newPath);
     }
 
-    public void addFile_pathPath(Path path) {
-        file_paths.add(path);
-    }
-
     public void deleteFilePath(Path path) {
         file_paths.remove(path);
     }
@@ -255,10 +251,6 @@ public class Project {
         this.tasks = tasks;
     }
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
-    }
-
     //MANY COMMENTS TO ONE USER
 
     public List<Comment> getComments() {
@@ -267,9 +259,5 @@ public class Project {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
     }
 }

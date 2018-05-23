@@ -39,6 +39,7 @@ dependencies {
 	compile('com.github.rjeschke:txtmark:0.13')
     compile('org.tautua.markdownpapers:markdownpapers-core:1.4.4')
 	compile("org.pegdown:pegdown:1.6.0")
+	compile ("com.dropbox.core:dropbox-core-sdk:3.0.7")
 }
 
 bootRun {

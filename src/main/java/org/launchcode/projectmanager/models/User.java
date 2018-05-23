@@ -30,6 +30,8 @@ public class User {
     @Basic(fetch = FetchType.EAGER)
     private byte[] avatarImage;
 
+    private String dbxAccessToken;
+
     //One (User) to Many (projects)
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -42,14 +44,14 @@ public class User {
     private List<Comment> comments = new ArrayList<>();
 
 
-    public User() { }
-
-    public void addProject(Project project) {
-        this.projects.add(project);
-    }
+    public User() {}
 
     public List<Project> getProjects() {
         return projects;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
     }
 
     public int getId() {
@@ -80,4 +82,11 @@ public class User {
         this.avatarImage = avatarImage;
     }
 
+    public String getDbxAccessToken() {
+        return dbxAccessToken;
+    }
+
+    public void setDbxAccessToken(String dbxAccessToken) {
+        this.dbxAccessToken = dbxAccessToken;
+    }
 }

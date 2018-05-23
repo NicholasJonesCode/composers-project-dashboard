@@ -14,38 +14,38 @@
 <div th:each="project : ${allPublicProjects}">
     <div class="single-project-wrapper">
 
-    <div>
-        <h2><i><a th:text="${project.title}" th:href="'/project/project-overview/' + ${project.id}"></a></i>   <span th:text="'created by ' + ${project.user.username}"></span>  </h2>
+        <div>
+            <h2><i><a th:text="${project.title}" th:href="'/project/project-overview/' + ${project.id}"></a></i>   <span th:text="'created by ' + ${project.user.username}"></span>  </h2>
 
-        <b><span>Description/Notes:</span></b>
-        <p style="word-wrap: break-word;" th:text="${project.notes}"></p>
-        <span th:if="${#lists.isEmpty(project.notes)}">[None]</span>
-    </div>
-
-    <hr/> <!-- loooooooooooong lineeeeeee -->
-
-    <div>
-        <h3>Comments: </h3>
-
-        <div th:each="comment : ${project.comments}">
-            <div class="comment">
-
-                <span><img class="post-avatar" th:src="@{|/user/user-profile/avatar/${comment.user.id}|}" /></span>
-
-                <u><span style="font-size: 22px;" th:text="${comment.user.username}"></span></u>    <br/>
-
-                <div class="comment-contents" th:text="${comment.contents}"></div>
-
-            </div>
+            <b><span>Description/Notes:</span></b>
+            <p style="word-wrap: break-word;" th:text="${project.notes}"></p>
+            <span th:if="${#lists.isEmpty(project.notes)}">[None]</span>
         </div>
 
-        <form action="/blog" method="post" th:object="${comment}">
-            <textarea id="comment" class="textarea" th:field="*{contents}" th:text="Comment..."></textarea>
-            <br/> <span class="comment-error" th:errors="*{contents}"></span> <br/>
-            <input type="submit" value="Post"/>
-            <input type="hidden" th:value="${project.id}" name="projectId" />
-        </form>
-    </div>
+        <hr/> <!-- loooooooooooong lineeeeeee -->
+
+        <div>
+            <h2>Comments: </h2>
+
+            <div th:each="comment : ${project.comments}">
+                <div class="comment">
+
+                    <span><img class="post-avatar" th:src="@{|/user/user-profile/avatar/${comment.user.id}|}" /></span>
+
+                    <u><span style="font-size: 22px;" th:text="${comment.user.username}"></span></u>    <br/>
+
+                    <div class="comment-contents" th:text="${comment.contents}"></div>
+
+                </div>
+            </div>
+
+            <form action="/blog" method="post" th:object="${comment}">
+                <textarea id="comment" class="textarea" th:field="*{contents}" th:text="Comment..."></textarea>
+                <br/> <span class="comment-error" th:errors="*{contents}"></span> <br/>
+                <input type="submit" value="Post"/>
+                <input type="hidden" th:value="${project.id}" name="projectId" />
+            </form>
+        </div>
 
     </div> <br/> <br/>
 </div>

@@ -197,7 +197,7 @@ public class ProjectsController {
         }
         //if there's a user, and that user is not the owner of the project, and the project is private, send them back to their dashboard
         if (currentUser != null && currentUser.getId() != theProject.getUser().getId() && !theProject.isPublic()) {
-            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to view that");
+            redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to view that, rawr");
             return "redirect:/project/dashboard";
         }
 
@@ -206,7 +206,7 @@ public class ProjectsController {
         }
 
         model.addAttribute("project", theProject);
-        model.addAttribute("tasks", theProject.getTasks()); //List<Task> thisProjectsTasks = theProject.getTasks(); or  taskDao.findByProjectId(theProject.getId());  which one is better lol
+        model.addAttribute("tasks", theProject.getTasks());
         model.addAttribute("filePaths", theProject.getFile_paths());
         model.addAttribute("title", "Overview");
 

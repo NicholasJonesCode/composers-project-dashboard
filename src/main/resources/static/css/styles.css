@@ -79,13 +79,6 @@ th {
     padding: 0.3rem;
 }
 
-.avatar {
-    border: 1px solid white;
-    padding: 8px;
-    max-width: 225px;
-    max-height: 225px;
-}
-
 textarea#notes {
     height: 250px;
     width: 700px;
@@ -270,6 +263,53 @@ textarea#task-description {
     max-width: 70%;
     word-wrap: break-word;
     padding: 8px;
+}
+
+/*profile-settings.html*/
+
+.dbx-all {
+
+    max-width: 14%;
+}
+
+.dbx-logo-image {
+    width: 90%;
+    height: 90%;
+}
+
+.avatar {
+    border: 1px solid white;
+    padding: 8px;
+    max-width: 225px;
+    max-height: 225px;
+}
+
+/***FIRST STYLE THE BUTTON***/
+.dbx-button{
+cursor:pointer; /*forces the cursor to change to a hand when the button is hovered*/
+padding:5px 25px; /*add some padding to the inside of the button*/
+background:#007DE4; /*the colour of the button*/
+border:1px solid #005aa3; /*required or the default border for the browser will appear*/
+/*give the button curved corners, alter the size as required*/
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+/*give the button a drop shadow*/
+-webkit-box-shadow: 0 0 4px rgba(0,0,0, .75);
+-moz-box-shadow: 0 0 4px rgba(0,0,0, .75);
+box-shadow: 0 0 4px rgba(0,0,0, .75);
+/*style the text*/
+color: white;
+font-size:1.1em;
+}
+
+/***NOW STYLE THE BUTTON'S HOVER AND FOCUS STATES***/
+.dbx-button:hover, .dbx-button:focus{
+background-color :#005aa3; /*make the background a little darker*/
+/*reduce the drop shadow size to give a pushed button effect*/
+-webkit-box-shadow: 0 0 1px rgba(0,0,0, .75);
+-moz-box-shadow: 0 0 1px rgba(0,0,0, .75);
+box-shadow: 0 0 1px rgba(0,0,0, .75);
 }
 
 /*fragments.html*/
