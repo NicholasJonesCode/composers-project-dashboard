@@ -13,7 +13,7 @@
 
     <p><div>
         <label th:for="title">Title: </label>
-        <input type="text" th:field="*{title}"/>
+        <input type="text" th:field="*{title}" value="Untitled"/>
         <span th:errors="*{title}"> </span>
     </div></p>
 
@@ -39,7 +39,7 @@
                     th:text="${key.name}"
                     th:value="${key}"></option>
         </select>
-        <span th:errors="*{primary_music_key}" />
+        <span th:errors="*{primary_music_key}"></span>
     </div></p>
 
 

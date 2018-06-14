@@ -9,11 +9,11 @@
 
 <h1 th:text="|${project.title} - ${title}|"></h1>
 
-<ul><i><li th:if="${actionMessage}" th:text="${actionMessage}" style="color: #42e4ed;"></li></i></ul>
+<ul><i><li th:if="${actionMessage}" th:utext="${actionMessage}" style="color: #42e4ed;"></li></i></ul>
 
 
 
-<div class="overview-top-half-wrapper">
+<div class="overview-first-section-wrapper">
 
 
     <div class="info-fields-wrapper">
@@ -81,8 +81,18 @@
                 </td>
             </tr>
         </table> <br/>
-    </div>
 
+        <div class="action-buttons">
+            <form th:action="|/project/edit-project/${project.id}|" method="get" style="float: left; margin-right: 10px;">
+                <input type="submit" value="Edit Info" />
+            </form>
+
+            <form th:action="|/project/delete-project/${project.Id}|" method="get" style="float: left;">
+                <input class="delete-button" type="submit" value="Delete Project" />
+            </form>
+        </div>
+
+    </div>
 
     <div class="overview-notes-wrapper">
 
@@ -95,27 +105,15 @@
     </div>
 
 
-    <div class="action-buttons">
-        <form th:action="|/project/edit-project/${project.id}|" method="get" style="float: left; margin-right: 10px;">
-            <input type="submit" value="Edit Info" />
-        </form>
-
-        <form th:action="|/project/delete-project/${project.Id}|" method="get" style="float: left;">
-            <input class="delete-button" type="submit" value="Delete Project" />
-        </form>
-    </div>
-
-
-
 </div>
 
 
 
-<hr/> <!-- !!!!!!! DIVIDES TOP AND BOTTOM HALFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF  !@!!!!!!! yeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet -->
+<hr/> <!-- !!!!!!! DIVIDES TOP AND MIDDLE ! !  !@!!!!!!! yeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet -->
 
 
 
-<div class="overview-bottom-half-wrapper">
+<div class="overview-second-section-wrapper">
 
     <div class="tasks-manager-wrapper">
         <table>
@@ -173,10 +171,12 @@
 
         <p>
             Usage: Simply paste the full path of the desired entry into the field, and click Add.
-            Adding paths that do not exist will not be allowed. Files opened will do so with the default system program.
-            Directories are opened standard-like with a file explorer. If a path has been moved or removed since importation,
-            you will be redirected to your default Documents folder in a file explorer. Deleting a file/folder won't put it
-            in the recycle bin or trash on your system, merely remove it from your listings.
+            Files opened will do so with the default system program.
+            Directories are opened with a file explorer. <br/>
+            - Adding paths that do not exist will not be allowed. <br/>
+            - If a path has been renamed, moved or removed since importation, you will be redirected to your default Documents folder in a file explorer.
+                    You may also see a blank space in the "Filename/Child Directory" column of the entry. <br/>
+            - Deleting a file/folder won't put it in the recycle bin or trash on your system, merely remove it from your listings.
         </p>
 
         <div>
@@ -186,15 +186,16 @@
                 <th class="open-head"></th>
                 <th class="delete-head"></th>
 
-                <tr th:each="path : ${filePaths}">
+                <tr th:each="path : ${allPaths}">
 
                     <td> <!-- Filename -->
-                            <span th:if="${@isDirOrFile.isDirectory(path)}">[Dir.]</span> <br/>
-                            <span th:if="${@isDirOrFile.isFile(path)}">[File]</span>
-                            <span th:text="${path.getFileName()}"></span>
+                        <div th:if="${@tools.isDirectory(path)}" th:text="|[Dir.] ${path.getFileName()}|"></div>
+                        <div th:if="${@tools.isFile(path)}" th:text="|[File] ${path.getFileName()}|"></div>
                     </td>
 
-                    <td th:text="${path}"></td> <!-- fullpath -->
+                    <td> <!-- fullpath -->
+                        <div th:text="${path}"></div>
+                    </td>
 
                     <td> <!-- open -->
                         <span><form th:action="|/project/open-path/${project.id}|" method="post">
@@ -213,7 +214,7 @@
                 </tr>
 
                 <!-- In case there's none, make it look like a table not just t-heads -->
-                <tr th:if="${filePaths.isEmpty()}">
+                <tr th:if="${allPaths.isEmpty()}">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -223,17 +224,20 @@
         </div> <br/>
 
         <form method="post" th:action="|/project/add-path/${project.Id}|">
-            <input type="text" name="filePathString" style="width: 500px" />
+            <input type="text" name="pathString" style="width: 500px" />
             <input type="submit" value="Add" />
         </form> <br/>
     </div>
-    <!-- yeet -->
-
+    <!-- Files end yeet -->
 
 </div>
 
-<hr/>
+<hr/>  <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DIVIDES SECOND AND THIRD SECTIONS !!!!!!!!!!!!!!!!!!!! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 
+<center>                                                                                    <!-- personal image host -->
+    <a th:href="|/project/dropbox-utils/${project.id}|"><img class="dbx-banner" src="https://www.imageupload.co.uk/images/2018/05/27/dbx-banner-final.png"/></a>
+    <p th:if="${#ctx.httpSession.getAttribute('currentUserObj').getDbxAccessToken()} == null">No Dropbox account currently connected...</p>
+</center>
 
 </body>
 

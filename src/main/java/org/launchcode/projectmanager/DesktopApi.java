@@ -1,7 +1,7 @@
 //package net.mightypork.rpack.utils;
 
 /*
-* Created by Stack user Mighty Pork:
+* Created by Stack Overflow user Mighty Pork:
 * https://stackoverflow.com/users/2180189/mightypork
 *
 * Found in this Q/A:

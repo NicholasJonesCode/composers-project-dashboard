@@ -64,14 +64,18 @@
         </form>
     </p>
 
+
+    <!-- TODO display better ui for dbx profile on profile page (include dbx avatar) -->
+
     <div th:if="${#ctx.httpSession.getAttribute('currentUserObj').dbxAccessToken} != null">
 
         <u>Connected!</u>
 
         <p><i><b>
-            <span th:text="${dbxAccountObj.getName().getDisplayName()}"></span> <br/>
-            <span th:text="${dbxAccountObj.getEmail()}"></span>
-        </b></i></p>
+            <div th:text="${dbxAccountObj.getName().getDisplayName()}"></div>
+            <div th:text="${dbxAccountObj.getEmail()}"></div>   </b>   <!-- only name and email is bold -->
+            <div th:text="|Approx. Free Space: ${freeSpace}|"></div>
+        </i></p>
 
         <form action="/user/dropbox-disconnect" method="post">
             <input class="dbx-button" type="submit" value="Disconnect My Account" />
@@ -79,7 +83,7 @@
 
     </div>
 
-    </center></div>
+</center></div>
 
 </body>
 

@@ -3,7 +3,8 @@ package org.launchcode.projectmanager.Controllers;
 import com.dropbox.core.*;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.users.FullAccount;
-import org.launchcode.projectmanager.BCrypt;
+import org.launchcode.projectmanager.Tools;
+import org.launchcode.projectmanager.models.DropboxAPI.DropboxMethods;
 import org.launchcode.projectmanager.models.User;
 import org.launchcode.projectmanager.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,13 +36,15 @@ public class UserController {
     * 1. USER CREATION (CreateUser)
     * 2. USER MANAGEMENT (UserProfile... ChangeUsername... DeleteUser...)
     * 3. USER LOGIN/LOGOUT (proper methods)
+    * 4. USER AVATAR METHODS
+    * 5. DROPBOX STUFF
      */
 
     @Autowired
     private UserDao userDao;
 
 
-    // USER CREATION
+    // ----------------- 1. USER CREATION -------------------
     @RequestMapping(value = "create-user", method = RequestMethod.GET)
     public String displayCreateUser(Model model) {
 
@@ -79,18 +83,24 @@ public class UserController {
         return "user/success-test";
     }
 
-    // USER MANAGEMENT
+    // ----------------- 2. USER MANAGEMENT (UserProfile... ChangeUsername... DeleteUser...) -------------------
     @RequestMapping(value = "user-profile", method = RequestMethod.GET)
     public String displayUserProfile(Model model, HttpSession session) throws DbxException {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
         model.addAttribute("currentUser", currentUser);
 
+                //DROPBOX API CALL
         if(currentUser.getDbxAccessToken() != null) {
             DbxRequestConfig config = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
             DbxClientV2 client = new DbxClientV2(config, currentUser.getDbxAccessToken());
             FullAccount currentAccount = client.users().getCurrentAccount();
+
             model.addAttribute("dbxAccountObj", currentAccount);
+
+            long freeSpaceInBytes = DropboxMethods.getTotalFreeSpaceInBytes(client);
+            String freeSpaceString = Tools.readableFileSize(freeSpaceInBytes);
+            model.addAttribute("freeSpace", freeSpaceString);
         }
 
         return "user/profile-settings";
@@ -133,12 +143,11 @@ public class UserController {
                 //DELETE SESSION
         session.invalidate();
 
-
         return "redirect:/";
     }
 
 
-    //USER LOGIN/LOGOUT
+    //// ----------------- 3. USER LOGIN/LOGOUT (proper methods -------------------
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String displayLogIn(Model model) {
 
@@ -186,6 +195,7 @@ public class UserController {
         return "user/logout-success";
     }
 
+    // ----------------- 4. USER AVATAR METHODS -------------------
     @RequestMapping(value = "upload-avatar", method = RequestMethod.GET)
     public String uploadAvatar(Model model) {
 
@@ -230,7 +240,7 @@ public class UserController {
     }
 
 
-    // ----------------- DROPBOX STUFF -------------------
+    // ----------------- 5. DROPBOX STUFF -------------------
 
     //INFO AND TOOLS FOR START AND FINISH METHODS
     final String APP_KEY = "693ssuwifm7m4dy";
@@ -263,13 +273,15 @@ public class UserController {
     public String finishDbxAuth(HttpSession session, HttpServletRequest request, HttpServletResponse response, final RedirectAttributes redirectAttributes) throws IOException {
 
         DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, "dropbox-auth-csrf-token");
-        DbxAuthFinish authFinish = null;
+        DbxAuthFinish authFinish;
 
         try {
             authFinish = auth.finishFromRedirect(redirectUri, csrfTokenStore, request.getParameterMap());
 
         } catch (DbxWebAuth.BadRequestException ex) {
             response.sendError(400, "On /dropbox-auth-finish: Bad request: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "On /dropbox-auth-finish: Bad request: " + ex.getMessage());
+            return "redirect:/user/user-profile";
 
         } catch (DbxWebAuth.BadStateException ex) {
             // Send them back to the start of the auth flow.
@@ -277,6 +289,8 @@ public class UserController {
 
         } catch (DbxWebAuth.CsrfException ex) {
             response.sendError(403, "Forbidden." + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "Forbidden." + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
+            return "redirect:/user/user-profile";
 
         } catch (DbxWebAuth.NotApprovedException ex) {
             // When Dropbox asked "Do you want to allow this app to access your Dropbox account?", the user clicked "No".
@@ -285,9 +299,13 @@ public class UserController {
 
         } catch (DbxWebAuth.ProviderException ex) {
             response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "Error communicating with Dropbox." + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
+            return "redirect:/user/user-profile";
 
         } catch (DbxException ex) {
             response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "Error communicating with Dropbox." + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
+            return "redirect:/user/user-profile";
         }
 
         //FINISHED!!!!!

@@ -25,19 +25,18 @@ repositories {
 
 
 dependencies {
+	compile('org.springframework.security:spring-security-crypto:5.0.5.RELEASE')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	//compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.session:spring-session')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('mysql:mysql-connector-java')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-	//testCompile('org.springframework.security:spring-security-test')
 	compile('commons-io:commons-io:2.5')
 	compile('es.nitaur.markdown:txtmark:0.16')
 	compile('com.github.rjeschke:txtmark:0.13')
-    compile('org.tautua.markdownpapers:markdownpapers-core:1.4.4')
+	compile('org.tautua.markdownpapers:markdownpapers-core:1.4.4')
 	compile("org.pegdown:pegdown:1.6.0")
 	compile ("com.dropbox.core:dropbox-core-sdk:3.0.7")
 }

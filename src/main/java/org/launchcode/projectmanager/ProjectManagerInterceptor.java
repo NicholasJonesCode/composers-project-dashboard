@@ -15,7 +15,8 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
             "/",
             "/user/login",
             "/user/create-user",
-            "/blog"
+            "/blog",
+            "/test"
             ));
 
     private List<String> forbiddenWhenLoggedIn = new ArrayList<>(Arrays.asList(
@@ -26,7 +27,8 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         //I let this URI go through for more detailed validation in the method itself
-        if (request.getRequestURI().contains("project-overview")) {
+        // and also let the path for entity that holds the avatar images go through, so that non-users can properly view the blog
+        if (request.getRequestURI().contains("project-overview") || request.getRequestURI().contains("user/user-profile/avatar")) {
             return true;
         }
 

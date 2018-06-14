@@ -4,7 +4,7 @@ html * {
     color: white;
     font-family: Candara;
 
-    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://www.imageupload.co.uk/images/2018/06/02/composers-dashboard-app-background47da0.jpg");
     /*"https://static.zerochan.net/The.Flower.of.Immorality.full.921646.jpg"  <--  Kagamine Rin/Len fan pic*/
     /*"https://images5.alphacoders.com/712/thumb-1920-712962.jpg" <-- zelda-ocarina-forest pic */
     /*extra darkening on the gradient, for better UX 'rgba(0, 0, 0, 0.5)' or similar */
@@ -42,7 +42,7 @@ hr:after {
     top: -0.8em;
     font-size: 1.5em;
     padding: 0 0.25em;
-    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://images5.alphacoders.com/712/thumb-1920-712962.jpg");
+    background: linear-gradient( rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25) ), url("https://www.imageupload.co.uk/images/2018/06/02/composers-dashboard-app-background47da0.jpg");
     -webkit-background-size: 100% 100%;
     -moz-background-size: 100% 100%;
     -o-background-size: 100% 100%;
@@ -105,6 +105,33 @@ input[type=text], input[type=password] {
     width: 275px;
 }
 
+
+.dbx-button{
+cursor:pointer; /*forces the cursor to change to a hand when the button is hovered*/
+padding:5px 25px; /*add some padding to the inside of the button*/
+margin: 0.2%; /*some margin around the outside*/
+background:#007DE4; /*the colour of the button*/
+border:1px solid #005aa3; /*required or the default border for the browser will appear*/
+/*give the button curved corners, alter the size as required*/
+-moz-border-radius: 10px;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+/*give the button a drop shadow*/
+-webkit-box-shadow: 0 0 4px rgba(0,0,0, .75);
+-moz-box-shadow: 0 0 4px rgba(0,0,0, .75);
+box-shadow: 0 0 4px rgba(0,0,0, .75);
+/*style the text*/
+color: white;
+font-size:1.1em;
+}
+.dbx-button:hover, .dbx-button:focus{
+background-color :#005aa3; /*make the background a little darker*/
+/*reduce the drop shadow size to give a pushed button effect*/
+-webkit-box-shadow: 0 0 1px rgba(0,0,0, .75);
+-moz-box-shadow: 0 0 1px rgba(0,0,0, .75);
+box-shadow: 0 0 1px rgba(0,0,0, .75);
+}
+
 /*project-overview.html*/
 
     /*GENERIC*/
@@ -113,53 +140,57 @@ input[type=text], input[type=password] {
     float:left;
 }
 
+.action-buttons {
+    padding: 0.5%;
+    float: left;
+    clear: both;
+}
+
 .field-tag {
     text-decoration: underline;
     font-weight: bold;
-    padding-right: 10px;
     width: 23%;
 }
 
-.overview-top-half-wrapper {
+.overview-first-section-wrapper {
     float: top;
-    min-height: 550px;
     overflow: auto;
-    margin-bottom:40px;
+    margin-bottom: 2%;
         /*border: 2px solid white; */
 }
 
-.overview-bottom-half-wrapper {
+.overview-second-section-wrapper {
     width:100%;
     overflow: hidden;
     margin-bottom:40px;
+    max-height: 700px;
 }
 
 .overview-notes-wrapper {
     float: right;
     width: 51%;
+    max-height: 700px;
     border: 2px solid white;
     margin-right: 1%;
-    padding: 5px;
+    padding: 0.25%;
+    overflow: auto;
 }
 
 textarea#overview-notes {
-    height: 450px;
-    width: 100%;
-}
-
-.action-buttons {
-    padding: 0.5%;
+    height: 375px;
+    width: 99.5%;
 }
 
     /*FILES*/
 .files-wrapper {
-    width: 50%;
-    height: 640px;
+    width: 49.8%;
+    min-height: 425px;
+    max-height: 650px;
     border: 2px solid white;
     float: right;
-    padding: 8px;
+    padding: 0.2%;
     overflow: auto;
-    margin-top: 5px;
+    margin-top: 0.25%;
 }
 
 .file-head {
@@ -177,12 +208,13 @@ textarea#overview-notes {
     /*TASKS*/
 .tasks-manager-wrapper {
     width:48%;
-    height:645px;
-    overflow-y: auto;
+    min-height: 425px;
+    max-height: 650px;
+    overflow: auto;
     float:left;
     border: 2px solid white;
-    padding:5px;
-    margin-top: 5px;
+    padding: 0.2%;
+    margin-top: 0.25%;
 }
 
 .description-head {
@@ -200,15 +232,60 @@ textarea#task-description {
     width: 650px;
 }
 
-.overview-actions {
-    width:250px;
-    height: 300px;
+/*dropbox-util.html*/
+
+.dbx-utils-upload-wrapper {
+    float: left;
+    clear: both;
     border: 2px solid white;
-    float: right 1200px;
-    padding-left: 10px;
-    margin-left: 950px;
-    margin-top: 21px;
+    padding: 0.25%;
+    margin-top: 0.25%;
+    margin-bottom:0.25%;
+    width: 49%;
 }
+
+.dbx-banner {
+    width: 30%;
+}
+
+.dbx-utils-download-wrapper {
+    border: 2px solid white;
+    float: right;
+    width: 48%;
+    padding: 0.25%;
+    margin-top: 0.25%;
+    margin-bottom:0.25%;
+
+}
+
+           /*headings*/
+
+.dbx-checkbox-head { /*used for both tables*/
+    width: 3%;
+}
+
+.dbx-local-filename-head {
+    width: 25%;
+}
+
+.dbx-local-fullpath-head {
+    width:64%;
+}
+
+.dbx-local-filesize-head {
+    width: 8%;
+}
+
+/*.dbx-checkbox-head {width: 3%;} for remote files table as well*/
+
+.dbx-remote-filename-head {
+    width: 87%;
+}
+
+.dbx-remote-filesize-head {
+    width: 10%;
+}
+
 
 /*edit-project.html*/
 .edit-form-wrapper {
@@ -218,7 +295,7 @@ textarea#task-description {
 /*blog.html*/
 
 .single-project-wrapper {
-    width: 950px;
+    width: 45%;
     border: 2px solid white;
     padding: 12px;
 }
@@ -255,6 +332,19 @@ textarea#task-description {
     max-height: 50px;
     float: left;
     margin-right: 5px;
+}
+
+.author-avatar {
+    max-width: 50px;
+    float: left;
+    margin-right: 1%;
+}
+
+.author {
+    height: 50px;
+    font-size: 20px;
+    padding: 0.2%;
+    margin-bottom: 2%;
 }
 
 /*all-projects.html*/
@@ -316,5 +406,5 @@ box-shadow: 0 0 1px rgba(0,0,0, .75);
 
 .header-nav-right-side {
     float: right;
-    padding-right:930px;
+    padding-right: 54%;
 }

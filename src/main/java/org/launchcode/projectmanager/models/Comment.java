@@ -13,6 +13,7 @@ public class Comment {
 
     @NotNull
     @Size(min = 1, max = 2000)
+    @Column(length = 2000)
     private String contents;
 
     //Many(comments) to One(User)

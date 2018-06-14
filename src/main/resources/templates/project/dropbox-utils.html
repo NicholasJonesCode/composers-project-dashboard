@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head"></head>
+
+<body>
+
+<header th:replace="fragments :: header"></header>
+
+<br/><br/>
+
+<center>                        <!-- dbx banner, personal image host -->
+    <img class="dbx-banner" src="https://www.imageupload.co.uk/images/2018/05/27/dbx-banner-final.png"/>
+    <a th:href="|/project/project-overview/${project.id}|"><h2 th:text="${project.getTitle()}"></h2></a>
+</center>
+
+<ul><i><li th:if="${actionMessage}" th:utext="${actionMessage}" style="color: #42e4ed;"></li></i></ul>
+
+
+<!-- UPLOAD LOCAL FILES TO DBX (ALL, SELECTED) -->
+<div class="dbx-utils-upload-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').getDbxAccessToken()} != null">
+    <center><h2><b> Upload to Dropbox from Computer </b></h2></center>
+
+    <div th:if="${allProjectFilePaths.isEmpty()} == true">You have not added any project files from your computer yet... </div>
+
+    <!-- TODO put in extended usage notes on both upload and download -->
+    <form th:if="${allProjectFilePaths.isEmpty()} == false" th:action="|/project/upload-files-to-dbx/${project.id}|" method="post">
+
+        <div>
+            Usage: <br/>
+            - <u>WARNING:</u> Files that exist in your project's Dropbox folder will be AUTOMATICALLY OVERWRITTEN if you attempt to upload a file of the same name.
+            For example, if you have a local file listed here called "sample1.txt" and there is also a "sample1.txt" in your project's remote Dropbox folder (shown over there to the right),
+            then the remote file will be replaced by the local version of that file.
+        </div> <br/>
+
+        <table>
+            <th class="dbx-checkbox-head"></th>
+            <th class="dbx-local-filename-head">Filename</th>
+            <th class="dbx-local-fullpath-head">Full Path</th>
+            <th class="dbx-local-filesize-head">Size</th>
+                                <!-- List<Path> -->
+            <tr th:each="path : ${allProjectFilePaths}">
+                <td> <!-- checkbox -->
+                    <input type="checkbox" name="projectFilesToUpload" th:value="${path}" />
+                </td>
+
+                <td> <!-- Filename -->
+                    <div th:text="${path.getFileName()}"></div>
+                </td>
+
+                <td> <!-- Full Path -->
+                    <div th:text="${path}"></div>
+                </td>
+
+                <td> <!-- Size -->
+                    <div th:text="${@tools.readableFileSize(path.toFile().length())}"></div>
+                </td>
+            </tr>
+        </table> <br/>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Upload Selected"/></span>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Upload All Files" /></span>
+
+    </form>
+
+</div>
+
+
+
+<!-- PROCESS-DBX-REMOTE-FILES (DOWNLOAD, DELETE) -->
+<div class="dbx-utils-download-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').getDbxAccessToken()} != null">
+    <center><h2><b> Manage Files In Dropbox Project Folder </b></h2></center>
+
+    <div th:if="${dbxProjectFiles.isEmpty()} == true">
+        There are currently no files in the Dropbox folder for this project...
+    </div>
+
+                    <!-- list of FileMetadata -->
+    <form th:if="${dbxProjectFiles.isEmpty()} == false" th:action="|/project/process-dbx-remote-files/${project.id}|" method="post">
+        <table>
+            <th class="dbx-checkbox-head"></th>
+            <th class="dbx-remote-filename-head">Filename</th>
+            <th class="dbx-remote-filesize-head">Size</th>
+
+            <tr th:each="file : ${dbxProjectFiles}">
+                <td> <!-- checkbox -->
+                    <input type="checkbox" name="dbxProjectFilesToDownload" th:value="${file}" />
+                </td>
+
+                <td> <!-- Filename -->
+                    <div th:text="${file.getName()}"></div>
+                </td>
+
+                <td> <!-- Size -->
+                    <div th:text="${@tools.readableFileSize(file.getSize())}"></div>
+                </td>
+            </tr>
+        </table> <br/>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Download All" /></span>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Download Selected" /></span>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Delete All" /></span>
+
+        <span><input class="dbx-button" type="submit" name="action" value="Delete Selected" /></span>
+
+    </form>
+
+    <br/>
+    <form th:action="|https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/${project.getTitle()}|" target="_blank" method="get">
+        <input class="dbx-button" type="submit" value="Go To Dropbox Folder" />
+    </form>
+
+</div>
+
+
+</body>
+
+</html>

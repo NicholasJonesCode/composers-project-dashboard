@@ -15,7 +15,8 @@ public class Task {
     private int id;
 
     @NotNull
-    @Size(min = 1, max = 4000, message = "Must have between 1-4000 characters")
+    @Size(min = 1, max = 4000)
+    @Column(length = 4000)
     private String description;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

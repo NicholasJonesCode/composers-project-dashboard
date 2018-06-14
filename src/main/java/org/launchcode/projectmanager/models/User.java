@@ -23,7 +23,7 @@ public class User {
     private String username;
 
     @NotNull
-    @Size(min = 6, max = 256)
+    @Size(min = 6, max = 255)
     private String password;
 
     @Lob

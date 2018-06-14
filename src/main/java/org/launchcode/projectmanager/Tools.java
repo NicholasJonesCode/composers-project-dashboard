@@ -4,36 +4,21 @@ import org.apache.commons.io.FileUtils;
 import org.launchcode.projectmanager.models.CloudConvertAPI.CCAPI_Implement;
 import org.launchcode.projectmanager.models.Project;
 import org.pegdown.PegDownProcessor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.tautua.markdownpapers.parser.ParseException;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.security.MessageDigest;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component //Make the Tools class a bean for usage in thymeleaf templates with SPEL
 public class Tools {
 
-
-    public static String makeSHA256HashString(String message) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(message.getBytes("UTF-8"));
-            return DatatypeConverter.printHexBinary(hash);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } return null;
-    }
-
-    public static boolean checkPassword (String password, String currentHashedPassword) {
-        return makeSHA256HashString(password).equals(currentHashedPassword);
-    }
-
-
-    //LOL MADE A NEW AND COOLER ONE XDDD;
     //update: I MADE ANOTHER ONE!!!!11 This one is different, and a bit easier to understand i think, but it takes a bit more code, for catching stuff. I'll keep the former one in comments tho.
     public static List<Project> getLastXProjects(List<Project> projectList, Integer x) {
         //if some turd puts in 0 or negative, return a nothing list
@@ -47,6 +32,7 @@ public class Tools {
 
         List<Project> finalList = new ArrayList<>();
 
+        //iterate backwards thru the list hehe
         for (int i = projectList.size() - 1; i >= 0; i--) {
             Project newProject = projectList.get(i);
             finalList.add(newProject);
@@ -99,6 +85,7 @@ public class Tools {
 
 
     public static String getRemoteReadmeAndConvertToHTMLString() throws IOException, ParseException {
+        //grabs raw remote readme into a file and converts locally instead of with CC API
 
         URL url = new URL("https://raw.githubusercontent.com/NicholasJonesCode/composers-project-dashboard/master/README.md");
         String outputPath = System.getProperty("user.dir") + File.separator + "src\\main\\resources\\files\\index.md";
@@ -115,7 +102,7 @@ public class Tools {
     }
 
     public static String getReadmeHtmlAllMethods() throws IOException, ParseException {
-        //This method will try the API with the first key, then the second key, then with the local method
+        //This method will try the CloudConvertAPI with the first key, then the second key, then with the local method
 
         String htmlReadmeString;
         try {       //1. try this key first
@@ -133,4 +120,26 @@ public class Tools {
 
         return htmlReadmeString;
     }
+
+    public static boolean isDirectory(Path path) {
+        File file = new File(path.toString());
+        return file.isDirectory();
+    }
+
+    public static boolean isFile(Path path) {
+        File file = new File(path.toString());
+        return file.isFile();
+    }
+
+    // https://stackoverflow.com/questions/3263892/format-file-size-as-mb-gb-etc
+    // Will work up to 1000 TB. Not written by me.
+    // I don't know if it was written by the person who provided it in their answer either, but they seem smart, so I presume it was. Here is their profile:
+    // https://stackoverflow.com/users/699240/mr-ed
+    public static String readableFileSize(long sizeInBytes) {
+        if(sizeInBytes <= 0) return "0";
+        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(sizeInBytes)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(sizeInBytes/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
 }

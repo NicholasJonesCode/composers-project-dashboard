@@ -2,6 +2,7 @@ package org.launchcode.projectmanager.models;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.launchcode.projectmanager.UniqueProjectTitle;
 import org.launchcode.projectmanager.models.enums.Mode;
 import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
@@ -9,6 +10,7 @@ import org.launchcode.projectmanager.models.enums.TimeSignatureNumerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,13 +23,17 @@ public class Project {
     @GeneratedValue
     private int id;
 
-    @Size(min = 1, message = "Title cannot be empty!")
+    @Size(min = 1, max = 1000)
+    @Column(length = 1000)
+    @UniqueProjectTitle
     private String title;
 
     @Size(max = 1000)
+    @Column(length = 1000)
     private String subtitle;
 
     @Size(max = 1000)
+    @Column(length = 1000)
     private String lyricist;
 
     private MusicKeyType primary_music_key;
@@ -37,6 +43,7 @@ public class Project {
     private Mode mode;
 
     @Size(max = 1000)
+    @Column(length = 1000)
     private String genre;
 
     private TimeSignatureNumerator primary_time_sig_num;
@@ -51,10 +58,12 @@ public class Project {
 
     //private String secondary_temp
 
-    @Size(max = 1000000)
+    @Size(max = 500000)
+    @Column(length = 500000) //500k
     private String instruments; //text area
 
-    @Size(max = 1500000000)
+    @Size(max = 10000000)
+    @Column(length = 10000000) //10mil
     private String notes; //text area
 
     private boolean isPublic;
@@ -62,7 +71,7 @@ public class Project {
     //Collection of Paths
     @ElementCollection(targetClass = Path.class)
     @Convert(converter = PathConverter.class)
-    private List<Path> file_paths = new ArrayList<>();
+    private List<Path> paths = new ArrayList<>();
 
     //Many(projects)to One(user)
     @ManyToOne(fetch = FetchType.EAGER)
@@ -214,22 +223,34 @@ public class Project {
     }
 
     //FILE PATHS LIST
-    public List<Path> getFile_paths() {
-        //return file_paths.stream().map(Paths::get).collect(Collectors.toList()); //idek what this is for lol
-        return file_paths;
+    public List<Path> getPaths() {
+        //return paths.stream().map(Paths::get).collect(Collectors.toList()); //idek what this is for lol
+        return paths;
     }
 
-    public void setFile_paths(List<Path> file_paths) {
-        this.file_paths = file_paths;
+    public List<Path> getFilePathsOnly() {
+
+        List<Path> filePaths = new ArrayList<>();
+
+        for (Path path : this.paths) {
+            if (Files.isRegularFile(path)) {
+                filePaths.add(path);
+            }
+        }
+        return filePaths;
     }
 
-    public void addFile_pathString(String path) {
+    public void setPaths(List<Path> paths) {
+        this.paths = paths;
+    }
+
+    public void addPathString(String path) {
         Path newPath = Paths.get(path);
-        file_paths.add(newPath);
+        paths.add(newPath);
     }
 
     public void deleteFilePath(Path path) {
-        file_paths.remove(path);
+        paths.remove(path);
     }
 
     //MANY TO ONE USER

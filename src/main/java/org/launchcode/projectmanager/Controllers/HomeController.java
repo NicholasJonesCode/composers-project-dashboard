@@ -27,6 +27,8 @@ import java.util.List;
 @RequestMapping("")
 public class HomeController {
 
+    //TODO 1: FULL TEST OF APP, ERRORS, AND ABILITIES!!
+
     @Autowired
     private ProjectDao projectDao;
 
@@ -56,7 +58,7 @@ public class HomeController {
 
         List<Project> allPublicProjects = Tools.sortProjectsNewestToOldest(projectDao.findByIsPublic(true));
 
-        if (allPublicProjects.size() == 0) {
+        if (allPublicProjects.isEmpty()) {
             model.addAttribute("noProjects", "No projects.... this app is desolate...");
         }
 
@@ -96,5 +98,18 @@ public class HomeController {
         commentDao.save(comment);
 
         return "redirect:/blog";
+    }
+
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public String testing(Model model) {
+
+        return "index/test";
+    }
+
+    @RequestMapping(value = "test", method = RequestMethod.POST)
+    public String testingPost(@RequestParam("testcheck") List<String> values) {
+
+        String stop = "stop point for debug";
+        return null;
     }
 }

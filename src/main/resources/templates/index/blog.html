@@ -11,18 +11,25 @@
 
 <p th:if="${allPublicProjects.isEmpty()}">No one has set a work as public yet.</p>
 
+<!-- This div is one single public project and all its data and comments -->
 <div th:each="project : ${allPublicProjects}">
     <div class="single-project-wrapper">
 
         <div>
-            <h2><i><a th:text="${project.title}" th:href="'/project/project-overview/' + ${project.id}"></a></i>   <span th:text="'created by ' + ${project.user.username}"></span>  </h2>
+            <h1> <i><a th:text="${project.title}" th:href="|/project/project-overview/${project.id}|"></a></i> </h1>
 
-            <b><span>Description/Notes:</span></b>
+            <div class="author">
+                <img th:if="${project.user.avatarImage} != null" class="author-avatar" th:src="@{|/user/user-profile/avatar/${project.user.id}|}" />
+                <div th:text="${project.user.username}"></div>
+                <form><input type="submit" value="Go to Profile" /></form>
+            </div>
+
+            <b>Description/Notes:</b>
             <p style="word-wrap: break-word;" th:text="${project.notes}"></p>
             <span th:if="${#lists.isEmpty(project.notes)}">[None]</span>
         </div>
 
-        <hr/> <!-- loooooooooooong lineeeeeee -->
+        <hr/> <!-- Long line separating info from Comments -->
 
         <div>
             <h2>Comments: </h2>
@@ -40,15 +47,16 @@
             </div>
 
             <form action="/blog" method="post" th:object="${comment}">
-                <textarea id="comment" class="textarea" th:field="*{contents}" th:text="Comment..."></textarea>
-                <br/> <span class="comment-error" th:errors="*{contents}"></span> <br/>
-                <input type="submit" value="Post"/>
-                <input type="hidden" th:value="${project.id}" name="projectId" />
+                <!-- Comment --><textarea id="comment" class="textarea" th:field="*{contents}" th:text="Comment..."></textarea> <br/>
+                <!-- Error Msg --><span class="comment-error" th:errors="*{contents}"></span> <br/>
+                <!-- Submit --><input type="submit" value="Post"/>
+                <!-- Hidden projectId --><input type="hidden" th:value="${project.id}" name="projectId" />
             </form>
         </div>
 
     </div> <br/> <br/>
 </div>
+<!-- End of project -->
 
 
 </body>

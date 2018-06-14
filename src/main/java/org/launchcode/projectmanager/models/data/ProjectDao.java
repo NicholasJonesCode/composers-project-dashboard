@@ -15,4 +15,6 @@ public interface ProjectDao extends CrudRepository<Project, Integer> {
 
     List<Project> findByIsPublic(boolean isPublic);
 
+    List<Project> findByTitle(String title);
+
 }
