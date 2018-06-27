@@ -27,12 +27,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +104,13 @@ public class ProjectsController {
     public ModelAndView processCreateProject(@ModelAttribute @Valid Project newProject, Errors errors, Model model, @RequestParam String isPublicPrivate,
                                               final RedirectAttributes redirectAttributes, BindingResult bindingResult, HttpSession session) {
 
+        //Project name must be unique
+        if (Tools.projectTitleExists(newProject.getTitle())) {
+            redirectAttributes.addFlashAttribute("project", newProject);
+            redirectAttributes.addFlashAttribute("errorMessage", "You already have a project by that name");
+            return new ModelAndView("redirect:/project/create-project");
+        }
+
         if (errors.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.project", bindingResult);
             redirectAttributes.addFlashAttribute("project", newProject);
@@ -153,19 +162,48 @@ public class ProjectsController {
                                            final RedirectAttributes redirectAttributes, BindingResult bindingResult, HttpSession session) {
 
         User currentUser = (User) session.getAttribute("currentUserObj");
+        Project projectToEdit = projectDao.findOne(projectId);
+        String redirectToOverview = "redirect:/project/project-overview/" + projectId;
+        String redirectToEditMode = "redirect:/project/edit-project/" + projectId;
 
         if (currentUser.getId() != projectDao.findOne(projectId).getUser().getId()) {
             redirectAttributes.addFlashAttribute("actionMessage", "You don't have permission to change this project");
             return new ModelAndView("redirect:/project/dashboard");
         }
 
+        if (Tools.projectTitleExists(editedProject.getTitle()) && Tools.projectTitleExists(projectToEdit.getTitle()) && !projectToEdit.getTitle().equals(editedProject.getTitle())) {
+            redirectAttributes.addFlashAttribute("project", editedProject);
+            redirectAttributes.addFlashAttribute("uniqueTitleError", "You already have a project by that name");
+            return new ModelAndView(redirectToEditMode);
+        }
+
+
         if (errors.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.project", bindingResult);
             redirectAttributes.addFlashAttribute("project", editedProject);
-            return new ModelAndView("redirect:/project/edit-project/" + projectId);
+            return new ModelAndView(redirectToEditMode);
         }
 
-        Project projectToEdit = projectDao.findOne(projectId);
+        //Rename the Dropbox project folder as well if they have one
+        DbxClientV2 dbxClient = new DbxClientV2(config, currentUser.getDbxAccessToken());
+        try {
+            if (!projectToEdit.getTitle().equals(editedProject.getTitle())  &&
+                    currentUser.getDbxAccessToken() != null  &&
+                        DropboxMethods.dbxFolderExists("/" + projectToEdit.getTitle(), dbxClient)) {
+
+                try {  //DROPBOX API CALL
+                    DropboxMethods.renameDbxProjectFolder(dbxClient, projectToEdit.getTitle(), editedProject.getTitle());
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    redirectAttributes.addFlashAttribute("actionMessage", "Error renaming your Dropbox project folder: " + e.toString() + ". <br/> All other editing was successful");
+                    return new ModelAndView(redirectToOverview);
+                }
+            }
+        } catch (DbxException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("actionMessage", "Error finding your Dropbox folder in order to rename it: " + e.toString() + ". All other editing was successful");
+            return new ModelAndView(redirectToOverview);
+        }
 
         projectToEdit.setTitle(editedProject.getTitle());
         projectToEdit.setSubtitle(editedProject.getSubtitle());
@@ -188,7 +226,8 @@ public class ProjectsController {
 
         projectDao.save(projectToEdit);
         redirectAttributes.addFlashAttribute("actionMessage", "Successfully Edited Info");
-        return new ModelAndView("redirect:/project/project-overview/" + projectId);
+
+        return new ModelAndView(redirectToOverview);
     }
 
     // ----------------- 4. PROJECT EDIT NOTES -------------------
@@ -213,7 +252,7 @@ public class ProjectsController {
 
     // ----------------- 5. PROJECT OVERVIEW -------------------
     @RequestMapping(value = "project-overview/{projectId}", method = RequestMethod.GET)
-    public String projectOverview(@PathVariable int projectId, Model model, HttpSession session, RedirectAttributes redirectAttributes) throws DbxException {
+    public String projectOverview(@PathVariable int projectId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
         Project theProject = projectDao.findOne(projectId);
         User currentUser = (User) session.getAttribute("currentUserObj");
@@ -352,14 +391,20 @@ public class ProjectsController {
     }
 
     // ----------------- 10. FILES, OPEN PATH -------------------
-    @RequestMapping(value = "open-path/{projectId}", method = RequestMethod.POST)
-    public String openFile(@PathVariable int projectId, @RequestParam String path) {
+    @RequestMapping(value = "open-path", method = {RequestMethod.GET, RequestMethod.POST})
+    public String openFile(@RequestParam(required = false) String path, @RequestParam(required = false) String redirectPath,
+                           RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
+        //if some cheeki breeki tries to go to that path...
+        if (request.getMethod().equals("GET")) {
+            redirectAttributes.addFlashAttribute("actionMessage", "That URL is not available right now.");
+            return "redirect:/project/dashboard";
+        }
 
         File fileToOpen = new File(path);
-
         DesktopApi.open(fileToOpen);
 
-        return "redirect:/project/project-overview/" + projectId;
+        return "redirect:" + redirectPath;
     }
 
     // ----------------- 11. FILES, DELETE PATH -------------------
@@ -381,7 +426,9 @@ public class ProjectsController {
         return "redirect:/project/project-overview/" + projectId;
     }
 
-    // ----------------- 12. DROPBOX METHODS -------------------
+    // ---------------------------------- 12. DROPBOX METHODS --------------------------------------------
+
+        //----------------- 12.1 DROPBOX UTILS PAGE -----------------
     @RequestMapping(value = "dropbox-utils/{projectId}", method = RequestMethod.GET)
     public String displayProjectDropboxUtilsPage(@PathVariable int projectId, Model model, HttpSession session, RedirectAttributes redirectAttributes)  {
 
@@ -419,6 +466,13 @@ public class ProjectsController {
             }
             model.addAttribute("dbxProjectFiles", dbxProjectFiles); //...like I said
 
+            try { //Pass in their account's free space for the user to see:
+                model.addAttribute("freeSpace", DropboxMethods.getTotalFreeSpaceInBytes(dbxClient));
+            } catch (DbxException e) {
+                e.printStackTrace();   //don't hold it up if you cant get it, just display as-is
+                model.addAttribute("freeSpace", "Error in getting your info!!: " + e.toString());
+            }
+
         } else  {
             redirectAttributes.addFlashAttribute("actionMessage", "You have not connected your Dropbox account yet. Go to \"Profiles and Settings\" to do that.");
             return "redirect:/project/project-overview/" + projectId;
@@ -431,10 +485,17 @@ public class ProjectsController {
         return "project/dropbox-utils";
     }
 
-        // ------------- 12.1 UPLOAD SELECTED, or UPLOAD ALL ----------
+        //--------------12.2 ACTION RESPONSE PAGE---------------
+    @RequestMapping(value = "dropbox-action-response", method = RequestMethod.GET)
+    public String dropboxUploadResponse(Model model) {
+
+        return "project/dropbox-action-response";
+    }
+
+        // ------------- 12.3 UPLOAD SELECTED, or UPLOAD ALL ----------
     @RequestMapping(value = "upload-files-to-dbx/{projectId}", method = RequestMethod.POST)
     public String uploadFilesToDbx(@PathVariable int projectId, @RequestParam(name = "projectFilesToUpload", required = false) List<Path> selectedProjectFilesToUpload,
-                                   @RequestParam(name = "action") String actionValue, final RedirectAttributes redirectAttributes, HttpSession session, Model model) throws DbxException {
+                                   @RequestParam(name = "action") String actionValue, final RedirectAttributes redirectAttributes, HttpSession session, Model model) {
 
         Project theProject = projectDao.findOne(projectId);
         User currentUser = (User) session.getAttribute("currentUserObj");
@@ -484,129 +545,315 @@ public class ProjectsController {
             return redirectToDbxUtils;
         }
 
+        //Establish title and give button to go the dbx folder
+        htmlUploadResponse.append(String.format("<h1> Uploading from Computer to Dropbox project folder \"%s\" </h1>", theProject.getTitle()));
+        htmlUploadResponse.append(String.format("<form action=\"https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/%s\" method=\"get\" target=\"_blank\"> "+
+                                                    "<input class=\"dbx-button\" type=\"submit\" value=\"Go To Folder\" /> " +
+                                                "</form> <br/>", theProject.getTitle()));
+
         for (Path localFilePath : projectFilesToUpload) {
+
+            htmlUploadResponse.append(String.format("<h3> %s </h3>", localFilePath.getFileName().toString())); //file name header
+
             try {
+                //determine if it exists first, THEN upload it, then recall again on the 'if' down there
+                boolean fileExistedInProjectFolder = DropboxMethods.fileExistsInProjectFolder(dbxClient, localFilePath, theProject.getTitle());
 
                 FileMetadata result = DropboxMethods.uploadToProjectFolderWithOverwriteMode(localFilePath, dbxClient, theProject.getTitle());
                 System.out.println(String.format("FILE UPLOADED TO DROPBOX PATH IN APP FOLDER %s for User %s : ",
-                        result.getPathDisplay(), dbxClient.users().getCurrentAccount().getName().getDisplayName())); //API call to user account here
+                        result.getPathDisplay(), dbxClient.users().getCurrentAccount().getName().getDisplayName())); //DBX API call to user account here
                 System.out.println(result.toStringMultiline());
 
-                if (DropboxMethods.fileExistsInProjectFolder(dbxClient, localFilePath, theProject.getTitle())) {
+                if (fileExistedInProjectFolder) {
 
-                    htmlUploadResponse.append(
-                            String.format( //Custom upload success state for file-already-exists....
-                                    "<b> <h3> File Upload - Success (with note) </h3> </b> " +
-                                            "Note: File Already Exists in Dropbox project folder: The local file you tried to upload, \"%s\" " +
-                                            "conflicted with a file with the same name already in your Dropbox project folder. <br/> " +
-                                            "The file in your Dropbox was overwritten by the local one, as stated in the usage notes. <br/> <br/> ", localFilePath.getFileName())
-                    );
+                    htmlUploadResponse.append(   //Custom upload success state for file-already-exists....
+                                "<div style=\"color:Yellow\">  Success (with note)  <br/> " +
+                                        "Note: File Already Exists in Dropbox project folder: The local file you tried to upload " +
+                                        "conflicted with a file with the same name already in your Dropbox project folder. <br/> " +
+                                        "The file in your Dropbox was overwritten by the local one, as stated in the usage notes. " +
+                                "</div> <br/> ");
                 } else {
                                             //....or not ^_^
-                    htmlUploadResponse.append("<b> <h3> File Upload - Complete Success </h3> </b> ");
+                    htmlUploadResponse.append("<div style=\"color:LimeGreen\">  Complete success  </div> <br/> ");
                 }
 
                 htmlUploadResponse.append(
-                        //Local file info first
-                        "<u> Local file info: </u> <br/> " +
-                                "Filename: " + localFilePath.getFileName() + " <br/> " +
-                                "Full Path: " + localFilePath.toAbsolutePath().toString() + " <br/> " +
-                                "Size: " + Tools.readableFileSize(localFilePath.toFile().length()) + " <br/> <br/> " +
-                                //Dropbox file info next
-                                "<u> Dropbox file info: </u> <br/> " +
-                                "Full file path from application folder: " + result.getPathDisplay() + " <br/> " +
-                                "Size: " + Tools.readableFileSize(result.getSize()) + " <br/> " +
+                                "Full local path: " + localFilePath.toAbsolutePath().toString() + " <br/> " +
+                                "Size on Computer: " + Tools.readableFileSize(localFilePath.toFile().length()) + " <br/> " +
+                                "Full file path from your Dropbox root: Apps/Composer's Dashboard App Files" + result.getPathDisplay() + " <br/> " +
+                                "Size in Dropbox: " + Tools.readableFileSize(result.getSize()) + " <br/> " +
                                 "=============================================================  "
                 );
-
-                continue;
 
             } catch (FileNotFoundException fnfe) {
                 System.out.println(fnfe.toString());
                 fnfe.printStackTrace();
 
-                htmlUploadResponse.append(
-                        "<b> <h3> File Upload - Failure <h3/> </b> <br/> <br/> " +
-                                "FileNotFoundException: <br/>" +
-                                "The file at the path \"" + localFilePath.toAbsolutePath().toString() + "\" Does not exist anymore, or was possibly renamed to something else <br/>" +
-                                "============================================================= "
-                );
-
-                continue;
+                htmlUploadResponse.append(String.format(
+                    "<div style=\"color:Red\">Failure: <br/> " +
+                        "FileNotFoundException: The file at the path \"%s\" Does not exist anymore, or was possibly renamed to something else "+
+                    "</div> <br/> ============================================================= ", localFilePath.toAbsolutePath().toString()
+                ));
 
             } catch (IOException ioe) {
                 System.out.println(ioe.toString());
                 ioe.printStackTrace();
 
-                htmlUploadResponse.append(
-                        "<b> <h3> File Upload - Failure </h3> </b> <br/> <br/> " +
-                                "Input/Output Exception at path \"" + localFilePath.toAbsolutePath().toString() + "\" <br/>" +
-                                ioe.getMessage() + "<br/>" + ioe.toString() + "<br/>" +
-                                "============================================================= "
-                );
+                htmlUploadResponse.append(String.format(
+                        "<div style=\"color:Red\">Failure: <br/>" +
+                                "Input/Output Exception at path \"%s\" <br/>" +
+                                " %s <br/> %s <br/> "+
+                        "</div> <br/> ============================================================= " ,localFilePath.toAbsolutePath().toString(), ioe.getMessage(), ioe.toString()
+                ));
 
             } catch (UploadErrorException upe) {
                 //DBX UPLOAD ERROR
                 System.out.println(upe.errorValue.toStringMultiline());
                 upe.printStackTrace();
 
-                htmlUploadResponse.append(
-                        " <b> <h3> File Upload - Failed </h3> </b> <br/>" +
-                                "at path: " + localFilePath.toAbsolutePath().toString() + "<br/> <br/>" +
-                                "Dropbox has given an Upload Error. Full message: " + upe.errorValue.toString() + " <br/> <br/> "
-                );
+                htmlUploadResponse.append(String.format(
+                        "<div style=\"color:Red\">Failure: <br/>" +
+                            "Dropbox has given an Upload Error. Full message: %s " +
+                        "</div> <br/>", upe.errorValue.toString()
+                ));
 
-                //assess the cause, possibly
-                long freeSpaceInBytes = DropboxMethods.getTotalFreeSpaceInBytes(dbxClient);
+                //Assess the cause, possibly
+                long freeSpaceInBytes = 0;
+
+                try {
+                    freeSpaceInBytes = DropboxMethods.getTotalFreeSpaceInBytes(dbxClient);
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    htmlUploadResponse.append(
+                            "<div style=\"Aqua\"> In trying to assess a possibility of a lack of free space on your Dropbox, Dropbox threw the following error: <br/>" +
+                            e.toString() + "<br/>" + "The upload process will end beyond this point. </div> <br/> "
+                    );
+                }
+
                 if (localFilePath.toFile().length() > freeSpaceInBytes) {
                     htmlUploadResponse.append(
-                            "According to analysis, this file's size is bigger than your total free space, which is the mostly likely the cause of the error." +
-                                    "Free up some space on your dropbox and try again. The upload process will end beyond this point. <br/> " +
-                                    "============================================================= "
+                            "<div style=\"Aqua\"> According to analysis, this file's size is bigger than your total free space, which is the mostly likely the cause of the error. <br/>" +
+                            "Free up some space on your dropbox and try again. The upload process will end beyond this point. </div> <br/> " +
+                            "============================================================= "
                     );
                     //Break off the uploading because there's no more space
                     break;
 
                 } else {
                     htmlUploadResponse.append("============================================================= ");
-                    continue;
                 }
 
             } catch (DbxException de) {
                 System.out.println(de.toString());
                 de.printStackTrace();
 
-                htmlUploadResponse.append(
-                        " <b> <h3> File Upload - Probable Failure </h3> </b> <br/>" +
-                                "at path: " + localFilePath.toAbsolutePath().toString() + "<br/> <br/>" +
-                                "Dropbox has given a generic DropboxException Error. Full message: " + de.toString() + " <br/> <br/> "
-                );
+                htmlUploadResponse.append(String.format(
+                        "<div style=\"color:Red\">Failure: <br/>" +
+                            "Dropbox has given an Upload Error. Full message: %s " +
+                        "</div> <br/> =============================================================", de.getMessage()
+                ));
             }
         }
 
         //Finally, list all the files the user tried to upload
         htmlUploadResponse.append(" <br/><br/>   <b><u> All local files you attempted to upload: </u></b>   <br/>");
-
         for (Path localFilePath : projectFilesToUpload) {
             htmlUploadResponse.append(localFilePath.toAbsolutePath().toString() + "<br/>");
         }
-
         htmlUploadResponse.append("<br/><br/>"); //couple of breaks to space from the back button
 
-
         redirectAttributes.addFlashAttribute("htmlResponse", htmlUploadResponse);
-        redirectAttributes.addFlashAttribute("projectId", theProject.getId());
-        return "redirect:/project/dropbox-upload-response";
-    }
-
-        //--------------12.3 UPLOAD RESPONSE PAGE---------------
-    @RequestMapping(value = "dropbox-upload-response", method = RequestMethod.GET)
-    public String dropboxUploadResponse(Model model) {
-
-        return "project/dropbox-action-response";
+        redirectAttributes.addFlashAttribute("project", theProject);
+        return "redirect:/project/dropbox-action-response";
     }
 
         //---------------12.4 PROCESS REMOTE DBX FILES (DOWNLOAD SELECTED/ALL, DELETE SELECTED, ALL) -------------------
-    //TODO method for these 4 possibilities  path=process-dbx-remote-files
+    @RequestMapping(value = "process-dbx-remote-files/{projectId}")
+    public String downloadDeleteProcessDbxRemoteFiles(@RequestParam(name = "action") String actionValue,
+                                                      @RequestParam String openFolderAfterDownload,
+                                                      @RequestParam(required = false) String localPathToDownloadTo,
+                                                      @RequestParam(required = false) List<String> selectedRemoteDbxProjectFilesToProcess,
+                                                      @PathVariable int projectId,                                      //Strings in this list are: pathLower fields of FileMetadata objects
+                                                      final RedirectAttributes redirectAttributes,
+                                                      HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("currentUserObj");
+        Project theProject = projectDao.findOne(projectId);
+        String redirectToOverview = "redirect:/project/project-overview/" + theProject.getId();
+        String redirectToDbxUtils = "redirect:/project/dropbox-utils/" + theProject.getId();
+        StringBuilder finalHtmlResponse = new StringBuilder();
+
+        if (currentUser.getDbxAccessToken() == null) {
+            redirectAttributes.addFlashAttribute("actionMessage", "You need to connect your Dropbox account first");
+            return redirectToOverview;
+        }
+
+        //DROPBOX API CLIENT INITIALIZE
+        DbxClientV2 dbxClient = new DbxClientV2(config, currentUser.getDbxAccessToken());
+
+        //Decide which files to process based upon action button
+        List<FileMetadata> finalRemoteDbxFilesToProcess = new ArrayList<>();
+        if (actionValue.contains("All")) {
+
+            try {
+                //DROPBOX API CALL
+                finalRemoteDbxFilesToProcess.addAll(DropboxMethods.getOnlyFilesInProjectFolder(theProject.getTitle(), dbxClient));
+
+            } catch (DbxException e) {
+                e.printStackTrace();
+                System.out.println(e.toString());
+                redirectAttributes.addFlashAttribute("actionMessage","Dropbox gave a generic Dropbox Error: " + e.toString());
+                return redirectToDbxUtils;
+            }
+
+        } else if (actionValue.contains("Selected")) {
+
+            if (selectedRemoteDbxProjectFilesToProcess != null) {
+
+                try {
+                    finalRemoteDbxFilesToProcess.addAll(DropboxMethods.convertDbxPathLowerStringsListIntoFileMetadataList(selectedRemoteDbxProjectFilesToProcess, dbxClient));
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    redirectAttributes.addFlashAttribute("actionMessage", "Dropbox error trying to retrieve the files you selected: " + e.toString());
+                    return redirectToDbxUtils;
+                }
+
+            } else {
+                redirectAttributes.addFlashAttribute("actionMessage", "You did not choose any files to download");
+                return redirectToDbxUtils;
+            }
+        }
+
+        //Then take the appropriate action, such as Download...
+        if (actionValue.contains("Download")) {
+
+            StringBuilder htmlDownloadResponse = new StringBuilder();
+
+            //Check if valid folder first
+            if (!Tools.isDirectory(localPathToDownloadTo) || localPathToDownloadTo.isEmpty() || localPathToDownloadTo == null) {
+                redirectAttributes.addFlashAttribute("actionMessage", "That is not a valid folder path to download to, or it doesnt exist");
+                return redirectToDbxUtils;
+            }
+
+            //abs path for better usage
+            Path localAbsoluteFilePathToDownloadTo = Paths.get(localPathToDownloadTo).toAbsolutePath();
+
+            htmlDownloadResponse.append(String.format("<h1> Downloading from Dropbox project folder to: %s</h1>", localAbsoluteFilePathToDownloadTo.toString()));
+            htmlDownloadResponse.append(String.format("<form action=\"https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/%s\" method=\"get\" target=\"_blank\"> "+
+                                                            "<input class=\"dbx-button\" type=\"submit\" value=\"Go To Dropbox Folder\" /> " +
+                                                      "</form>", theProject.getTitle()));
+
+            for (FileMetadata file : finalRemoteDbxFilesToProcess) {
+
+                htmlDownloadResponse.append(String.format("<h3> %s </h3>", file.getName())); //Header with filename for each listing
+
+                try {
+
+                    boolean existsInLocalPath = Tools.isFile(localPathToDownloadTo + File.separator + file.getName());
+
+                    //DROPBOX API CALL
+                    FileMetadata fileFromDropbox = DropboxMethods.downloadFileFromDropbox(localPathToDownloadTo, file, dbxClient);
+
+                    if (existsInLocalPath) {
+
+                        htmlDownloadResponse.append(   //Custom upload success state for file-already-exists....
+                                "<div style=\"color:Yellow\">  Success (with note)  <br/> " +
+                                        "Note: File Already Exists in the Folder you tried to download the file to, but was overwritten, as stated in the usage notes. " +
+                                "</div> <br/> ");
+                    } else {
+                        htmlDownloadResponse.append("<div style=\"color:LimeGreen\">  Complete success  </div> <br/> ");
+                    }
+
+                    htmlDownloadResponse.append(
+                            "Full file path from your Dropbox root: Apps/Composer's Dashboard App Files" + fileFromDropbox.getName() + " <br/> " +
+                            "Size in Dropbox: " + Tools.readableFileSize(fileFromDropbox.getSize()) + " <br/> " +
+                            "File name in download folder: " + localAbsoluteFilePathToDownloadTo.getFileName() + " <br/> " +
+                            "Size in download folder: " + Tools.readableFileSize(localAbsoluteFilePathToDownloadTo.toFile().length()) + " <br/> " +
+                            "=============================================================  "
+                    );
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                    htmlDownloadResponse.append(String.format(
+                            "<div style=\"color:Red\">Possible Failure: <br/>" +
+                                "In trying to access the folder you provided, or trying to write the file to your computer, and input/output error was thrown: <br/> " +
+                                    "%s " +
+                            "</div> <br/> =============================================================", e.toString()
+                    ));
+
+                } catch (DbxException e) {
+                    e.printStackTrace();
+
+                    htmlDownloadResponse.append(String.format(
+                            "<div style=\"color:Red\">Failure: <br/>" +
+                                "Dropbox has given an generic error: %s " +
+                            "</div> <br/> =============================================================", e.toString()
+                    ));
+                }
+            }
+
+            //Finally, list all the files the user tried to download
+            htmlDownloadResponse.append(" <br/><br/>   <b><u> All local files you attempted to download: </u></b>   <br/>");
+            for (FileMetadata file : finalRemoteDbxFilesToProcess) {
+                htmlDownloadResponse.append(file.getName() + "<br/>");
+            }
+            htmlDownloadResponse.append("<br/><br/>"); //couple of breaks to space from the back buttons
+
+
+            //the finished document goes out to the template
+            finalHtmlResponse.append(htmlDownloadResponse);
+
+            //open the folder if they wanted
+            if (openFolderAfterDownload.contains("true")) {
+
+                DesktopApi.open(localAbsoluteFilePathToDownloadTo.toFile());
+            }
+
+            //...or Delete
+        } else if (actionValue.contains("Delete")) {
+
+            StringBuilder htmlDeleteResponse = new StringBuilder();
+
+            htmlDeleteResponse.append(String.format("<h1> <span style=\"color:Red\">Deleting</span> from Dropbox project folder: %s</h1>", theProject.getTitle()));
+            htmlDeleteResponse.append(String.format("<form action=\"https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/%s\" method=\"get\" target=\"_blank\"> "+
+                                                            "<input class=\"dbx-button\" type=\"submit\" value=\"Go To Folder\" /> " +
+                                                      "</form> <br/>", theProject.getTitle()));
+
+            for (FileMetadata file : finalRemoteDbxFilesToProcess) {
+
+                htmlDeleteResponse.append(String.format("<h3> %s </h3>", file.getName())); //Header with filename for each listing
+
+                try {
+                    DropboxMethods.deleteFileInProjectFolder(dbxClient, theProject.getTitle(), file.getName());
+
+                    htmlDeleteResponse.append("<div style=\"color:Red\">Deleted!</div> <br/>");
+                    htmlDeleteResponse.append("=============================================================");
+
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    htmlDeleteResponse.append(String.format("<div style=\"color:LightGray\">There was a problem in deleting this file: %s </div> <br/>", e.toString()));
+                    htmlDeleteResponse.append("=============================================================");
+                }
+            }
+
+            //Finally, list all the files the user tried to delete
+            htmlDeleteResponse.append(" <br/><br/>   <b><u> All local files you attempted to delete: </u></b>   <br/>");
+            for (FileMetadata file : finalRemoteDbxFilesToProcess) {
+                htmlDeleteResponse.append(file.getName() + "<br/>");
+            }
+            htmlDeleteResponse.append("<br/><br/>"); //couple of breaks to space from the back button
+
+            //the finished document goes out to the template
+            finalHtmlResponse.append(htmlDeleteResponse);
+
+        }
+
+
+        redirectAttributes.addFlashAttribute("htmlResponse", finalHtmlResponse);
+        redirectAttributes.addFlashAttribute("project", theProject);
+        return "redirect:/project/dropbox-action-response";
+    }
+
 
 }

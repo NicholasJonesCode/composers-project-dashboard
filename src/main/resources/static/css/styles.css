@@ -60,7 +60,7 @@ option {
 }
 
 table {
-    border: 2px solid white;
+    border: 1px solid white;
     font-size: 1em;
     padding: 5px 5px;
     border-collapse: collapse;
@@ -232,7 +232,13 @@ textarea#task-description {
     width: 650px;
 }
 
-/*dropbox-util.html*/
+/*dropbox-utils.html*/
+
+.dbx-usage {
+    max-width: 55%;
+    border: 1px solid white;
+    padding: 0.15%;
+}
 
 .dbx-utils-upload-wrapper {
     float: left;
@@ -251,7 +257,7 @@ textarea#task-description {
 .dbx-utils-download-wrapper {
     border: 2px solid white;
     float: right;
-    width: 48%;
+    width: 49%;
     padding: 0.25%;
     margin-top: 0.25%;
     margin-bottom:0.25%;
@@ -264,26 +270,32 @@ textarea#task-description {
     width: 3%;
 }
 
+.dbx-date-modified-head { /*used for both tables*/
+    width: 12%;
+}
+
+
 .dbx-local-filename-head {
     width: 25%;
 }
 
 .dbx-local-fullpath-head {
-    width:64%;
+    width:52%;
 }
 
 .dbx-local-filesize-head {
     width: 8%;
 }
 
-/*.dbx-checkbox-head {width: 3%;} for remote files table as well*/
+    /*.dbx-checkbox-head {width: 3%;} for remote files table as well*/
+    /*.dbx-date-modified-head { width: 14%; } for remote files table as well */
 
 .dbx-remote-filename-head {
-    width: 87%;
+    width: 75%;
 }
 
 .dbx-remote-filesize-head {
-    width: 10%;
+    width: 9%;
 }
 
 
@@ -350,7 +362,7 @@ textarea#task-description {
 /*all-projects.html*/
 .allprojects-project-wrapper {
     border: 1px solid white;
-    max-width: 70%;
+    max-width: 80%;
     word-wrap: break-word;
     padding: 8px;
 }

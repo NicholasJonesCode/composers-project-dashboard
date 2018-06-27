@@ -4,12 +4,10 @@ import com.dropbox.core.DbxException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.net.URISyntaxException;
-
 @SpringBootApplication
 public class ProjectManagerApplication {
 
-	public static void main(String[] args) throws DbxException, URISyntaxException {
+	public static void main(String[] args) throws DbxException {
 
 		SpringApplication.run(ProjectManagerApplication.class, args);
 
@@ -17,6 +15,8 @@ public class ProjectManagerApplication {
 
 //        DbxRequestConfig config = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
 //        DbxClientV2 client = new DbxClientV2(config, "3ig-1SuT0YAAAAAAAAAASMDaXdgQ3qhd4Xpeu9K6SLjKkT2h_eydu8eBha4_ShpM");
+//
+//        System.out.println(Tools.dateObjectToReadableDateTimeString( ((FileMetadata) client.files().getMetadata("/newTestdbxfolder1RENAME2/1967.jpg")).getClientModified()  ));
 //
 //        FullAccount currentAccount = client.users().getCurrentAccount();
 //        System.out.println(currentAccount.toStringMultiline());
@@ -41,6 +41,7 @@ public class ProjectManagerApplication {
 //        URI folderPath = new URI("https://www.dropbox.com/home/Apps/Composer's%20Dashboard%20App%20Files");
 //        DesktopApi.browse(folderPath);
 //
+//        System.out.println(Tools.isFile(Paths.get("F:\\test\\test-doc.rtf")));
 //
 //        Path testPath = Paths.get("F:\\Documents\\f10606678.rtf");
 //

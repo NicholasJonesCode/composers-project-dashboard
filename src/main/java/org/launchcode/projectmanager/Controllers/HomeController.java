@@ -106,10 +106,4 @@ public class HomeController {
         return "index/test";
     }
 
-    @RequestMapping(value = "test", method = RequestMethod.POST)
-    public String testingPost(@RequestParam("testcheck") List<String> values) {
-
-        String stop = "stop point for debug";
-        return null;
-    }
 }

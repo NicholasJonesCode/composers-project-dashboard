@@ -12,13 +12,15 @@
 
 
 
-    <form th:action="|/project/dropbox-utils/${projectId}|" method="get">
+    <form th:action="|/project/dropbox-utils/${project.id}|" method="get">
         <input class="dbx-button" type="submit" value="Go Back to Dropbox Utilities" />
     </form>
 
-    <form th:action="|/project/project-overview/${projectId}|" method="get">
+    <form th:action="|/project/project-overview/${project.id}|" method="get">
         <input class="dbx-button" type="submit" value="Go Back to Project Overview" />
     </form>
+
+
 
     <p> <u>Note:</u> this page's information will expire once you return to the project overview.</p>
 

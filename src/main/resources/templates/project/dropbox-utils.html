@@ -11,11 +11,16 @@
 
 <center>                        <!-- dbx banner, personal image host -->
     <img class="dbx-banner" src="https://www.imageupload.co.uk/images/2018/05/27/dbx-banner-final.png"/>
-    <a th:href="|/project/project-overview/${project.id}|"><h2 th:text="${project.getTitle()}"></h2></a>
+    <a th:href="|/project/project-overview/${project.id}|"><h2 th:text="|${project.getTitle()} (Back to Overview)|"></h2></a>
+
+    <div class="dbx-usage">
+        If you are at this page for the first time for this project, a folder for this project has been created in your Dropbox in the folder "Apps/Composer's Dashboard App Files".
+        On the left side, you will see familiar entries, which are all the file paths you've attached to this project.
+        You can upload these files to your project folder in Dropbox. On the left, you can delete those files or download them back to your computer, at a folder that you specify.
+    </div>
 </center>
 
 <ul><i><li th:if="${actionMessage}" th:utext="${actionMessage}" style="color: #42e4ed;"></li></i></ul>
-
 
 <!-- UPLOAD LOCAL FILES TO DBX (ALL, SELECTED) -->
 <div class="dbx-utils-upload-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').getDbxAccessToken()} != null">
@@ -23,20 +28,22 @@
 
     <div th:if="${allProjectFilePaths.isEmpty()} == true">You have not added any project files from your computer yet... </div>
 
-    <!-- TODO put in extended usage notes on both upload and download -->
-    <form th:if="${allProjectFilePaths.isEmpty()} == false" th:action="|/project/upload-files-to-dbx/${project.id}|" method="post">
 
-        <div>
+    <form th:if="${allProjectFilePaths.isEmpty()} == false" th:action="|/project/upload-files-to-dbx/${project.id}|" method="post">
+        <div >
             Usage: <br/>
-            - <u>WARNING:</u> Files that exist in your project's Dropbox folder will be AUTOMATICALLY OVERWRITTEN if you attempt to upload a file of the same name.
+            -- <span style="color:OrangeRed; text-decoration: underline wavy OrangeRed;">WARNING:</span>
+            Files that exist in your project's Dropbox folder will be AUTOMATICALLY OVERWRITTEN if you attempt to upload a file of the same name.
             For example, if you have a local file listed here called "sample1.txt" and there is also a "sample1.txt" in your project's remote Dropbox folder (shown over there to the right),
-            then the remote file will be replaced by the local version of that file.
+            then the remote file will be replaced by the local version of that file. <br/>
+            -- Simply select the files you chose to upload to your Dropbox, and click "Upload Selected", or if you want to upload all on the list, click "Upload All Files".
         </div> <br/>
 
         <table>
             <th class="dbx-checkbox-head"></th>
             <th class="dbx-local-filename-head">Filename</th>
             <th class="dbx-local-fullpath-head">Full Path</th>
+            <th class="dbx-date-modified-head">Last Modified</th>
             <th class="dbx-local-filesize-head">Size</th>
                                 <!-- List<Path> -->
             <tr th:each="path : ${allProjectFilePaths}">
@@ -50,6 +57,10 @@
 
                 <td> <!-- Full Path -->
                     <div th:text="${path}"></div>
+                </td>
+
+                <td> <!-- Last Modified -->
+                    <div th:text="${@tools.localFileDateTimeLastModifiedString(path.toString())}">SAMPLE</div>
                 </td>
 
                 <td> <!-- Size -->
@@ -70,26 +81,41 @@
 
 <!-- PROCESS-DBX-REMOTE-FILES (DOWNLOAD, DELETE) -->
 <div class="dbx-utils-download-wrapper" th:if="${#ctx.httpSession.getAttribute('currentUserObj').getDbxAccessToken()} != null">
-    <center><h2><b> Manage Files In Dropbox Project Folder </b></h2></center>
+    <center><h2><b> Manage Files In <span style="color:#007af4;">Dropbox</span> Project Folder </b></h2></center>
 
-    <div th:if="${dbxProjectFiles.isEmpty()} == true">
-        There are currently no files in the Dropbox folder for this project...
+    <div style="margin-bottom: 0.15%;">
+        Usage: <br/>
+        -- <span style="color:OrangeRed; text-decoration: underline wavy OrangeRed;">WARNING:</span>
+        Files that exist in the download folder you specify will be AUTOMATICALLY OVERWRITTEN if you attempt to download a file of the same name to the folder.
+        For example, if you have a Dropbox file listed here called "sample1.txt" and there is also a "sample1.txt" in your download folder (shown over there to the left),
+        then the remote file will be replaced by the local version of that file. <br/>
+        -- Select all the files you wish to download from your Dropbox project folder, specify the path on your computer you want to download into, and click "Download Selected".
+        You can also delete the files you've selected with the "Delete Selected". These tasks can be performed for every file in your project folder with "Download All" and "Delete All".
     </div>
 
-                    <!-- list of FileMetadata -->
+    <center><b><div th:text="|Approximate Free Space in Account: ${@tools.readableFileSize(freeSpace)}|"></div></b></center>
+
+    <div th:if="${dbxProjectFiles.isEmpty()} == true">There are currently no files in the Dropbox folder for this project...</div>
+
+                    <!-- dbxProjectFiles is a list of FileMetadata dropbox objects -->
     <form th:if="${dbxProjectFiles.isEmpty()} == false" th:action="|/project/process-dbx-remote-files/${project.id}|" method="post">
         <table>
             <th class="dbx-checkbox-head"></th>
             <th class="dbx-remote-filename-head">Filename</th>
+            <th class="dbx-date-modified-head">Last Modified</th>
             <th class="dbx-remote-filesize-head">Size</th>
 
             <tr th:each="file : ${dbxProjectFiles}">
                 <td> <!-- checkbox -->
-                    <input type="checkbox" name="dbxProjectFilesToDownload" th:value="${file}" />
+                    <input type="checkbox" name="selectedRemoteDbxProjectFilesToProcess" th:value="|${file.getPathLower()}|" />
                 </td>
 
                 <td> <!-- Filename -->
                     <div th:text="${file.getName()}"></div>
+                </td>
+
+                <td> <!-- Last Modified -->
+                    <div th:text="${@tools.dateObjectToReadableDateTimeString(file.getClientModified())}"></div>
                 </td>
 
                 <td> <!-- Size -->
@@ -97,6 +123,13 @@
                 </td>
             </tr>
         </table> <br/>
+
+        <div style="margin-bottom: 1%;">Folder that you want to download these files to:
+            <input type="text" name="localPathToDownloadTo"/>
+
+            <br/> Open folder after download: <input type="hidden" name="openFolderAfterDownload" value="false" />
+            <input type="checkbox" name="openFolderAfterDownload" value="true" />
+        </div>
 
         <span><input class="dbx-button" type="submit" name="action" value="Download All" /></span>
 
@@ -108,14 +141,14 @@
 
     </form>
 
-    <br/>
-    <form th:action="|https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/${project.getTitle()}|" target="_blank" method="get">
+
+    <form style="margin-top: 1%;" th:action="|https://www.dropbox.com/home/Apps/Composer's Dashboard App Files/${project.getTitle()}|" target="_blank" method="get">
         <input class="dbx-button" type="submit" value="Go To Dropbox Folder" />
     </form>
 
 </div>
 
-
 </body>
+
 
 </html>

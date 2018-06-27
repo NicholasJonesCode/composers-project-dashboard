@@ -10,6 +10,7 @@
 
 <body>
 
+<!-- dynamic header that shows different links based on if the user is logged in or not -->
 <header th:fragment="header">
 
     <nav th:if="${#ctx.httpSession.getAttribute('currentUserObj')} != null">

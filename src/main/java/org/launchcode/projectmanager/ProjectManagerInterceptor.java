@@ -15,8 +15,7 @@ public class ProjectManagerInterceptor implements HandlerInterceptor {
             "/",
             "/user/login",
             "/user/create-user",
-            "/blog",
-            "/test"
+            "/blog"
             ));
 
     private List<String> forbiddenWhenLoggedIn = new ArrayList<>(Arrays.asList(

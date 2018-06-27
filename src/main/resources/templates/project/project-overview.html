@@ -173,10 +173,13 @@
             Usage: Simply paste the full path of the desired entry into the field, and click Add.
             Files opened will do so with the default system program.
             Directories are opened with a file explorer. <br/>
-            - Adding paths that do not exist will not be allowed. <br/>
-            - If a path has been renamed, moved or removed since importation, you will be redirected to your default Documents folder in a file explorer.
+            -- Adding paths that do not exist will not be allowed. <br/>
+            -- If a path has been renamed, moved or removed since importation, you will be redirected to your default Documents folder in a file explorer.
                     You may also see a blank space in the "Filename/Child Directory" column of the entry. <br/>
-            - Deleting a file/folder won't put it in the recycle bin or trash on your system, merely remove it from your listings.
+            -- Deleting a file/folder won't put it in the recycle bin or trash on your system, merely remove it from your listings. <br/>
+            -- If, in modifying any of the files on this list, you get a message something like, "Cannot access file because its running in another application",
+                    then it is a limitation of the Java library, the language this application was written in. But it acts as a natural protection against errors,
+                    such as what would happen when modifying files mid-background-process.
         </p>
 
         <div>
@@ -198,8 +201,9 @@
                     </td>
 
                     <td> <!-- open -->
-                        <span><form th:action="|/project/open-path/${project.id}|" method="post">
+                        <span><form action="/project/open-path/" method="post">
                         <input type="hidden" name="path" th:value="${path}"/>
+                        <input type="hidden" name="redirectPath" th:value="|/project/project-overview/${project.id}|" />
                         <input type="submit" value="Open" />
                         </form></span>
                     </td>

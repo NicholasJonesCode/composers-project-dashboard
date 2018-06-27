@@ -3,7 +3,9 @@ package org.launchcode.projectmanager;
 import org.apache.commons.io.FileUtils;
 import org.launchcode.projectmanager.models.CloudConvertAPI.CCAPI_Implement;
 import org.launchcode.projectmanager.models.Project;
+import org.launchcode.projectmanager.models.data.ProjectDao;
 import org.pegdown.PegDownProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.tautua.markdownpapers.parser.ParseException;
@@ -13,11 +15,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component //Make the Tools class a bean for usage in thymeleaf templates with SPEL
 public class Tools {
+
+    private static ProjectDao projectDao;
+    @Autowired
+    public void setProjectDao(ProjectDao projectDao) {
+        Tools.projectDao = projectDao;
+    }
 
     //update: I MADE ANOTHER ONE!!!!11 This one is different, and a bit easier to understand i think, but it takes a bit more code, for catching stuff. I'll keep the former one in comments tho.
     public static List<Project> getLastXProjects(List<Project> projectList, Integer x) {
@@ -126,8 +136,18 @@ public class Tools {
         return file.isDirectory();
     }
 
+    public static boolean isDirectory(String path) {
+        File file = new File(path);
+        return file.isDirectory();
+    }
+
     public static boolean isFile(Path path) {
         File file = new File(path.toString());
+        return file.isFile();
+    }
+
+    public static boolean isFile(String path) {
+        File file = new File(path);
         return file.isFile();
     }
 
@@ -140,6 +160,33 @@ public class Tools {
         final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
         int digitGroups = (int) (Math.log10(sizeInBytes)/Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(sizeInBytes/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    public static String localFileDateTimeLastModifiedString(String filePath) {
+
+        File file = new File(filePath);
+
+        //month/day/year hours:minutes:seconds AM/PM
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
+
+        return sdf.format(file.lastModified());
+    }
+
+    public static String dateObjectToReadableDateTimeString(Date date) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
+
+        return sdf.format(date);
+    }
+
+    public static boolean projectTitleExists(String projectTitle) {
+
+        List<Project> queryResult = projectDao.findByTitle(projectTitle);
+
+        if (queryResult.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
 }

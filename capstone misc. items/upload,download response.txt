@@ -1,0 +1,48 @@
+Downloading from dbx project folder projectSample to F:\test\test2\etc
+
+<h3><b><u>file_name.png</u></b></h3>
+<div style="color:LimeGreen">Complete success</div> <br/><br/>
+or
+<div style="color:Yellow">Success (with note)</div> <br/><br/>
+or
+<div style="color:Red">Failure, something blah</div> <br/><br/>
+
+<u>Dropbox Path from Application folder:</u> value.png <br/>
+<u>Size in Dropbox: 233kb</u>  "
+<u>Full local path: F:\dirs\file.png</u>  "
+<u>Size on Computer: 233kb</u>  "
+
+
+(finally..)
+
+All files you attempted to download:
+file1.png
+file2.png
+....
+
+<button  GO TO DROPBOX PROJECT FOLDER>
+<button GO TO LOCAL DOWNLOAD FOLDER
+
+============================
+
+Uploading from Computer to Dropbox project folder "projectTest"
+<button Go to folder>
+
+<h3>
+	
+<div style="color:LimeGreen">Complete success</div> <br/><br/>
+or
+<div style="color:Yellow">Success (with note)</div> <br/><br/>
+or
+<div style="color:Red">Failure, something blah</div> <br/><br/>
+
+<u>Full local path:</u> value <br/>
+<u>Size on computer:</u> "
+<u>Path in dropbox from application folder:</u> "
+<u>Size in Dropbox:</u> "
+
+(finally...)
+All files you tried to upload:
+F:\Full-path\to\file.png
+F:\test\test\tset
+....

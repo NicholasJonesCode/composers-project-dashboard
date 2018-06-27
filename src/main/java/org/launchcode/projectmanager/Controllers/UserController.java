@@ -54,11 +54,8 @@ public class UserController {
     }
 
     @RequestMapping(value = "create-user", method = RequestMethod.POST)
-    public String processCreateUser(@ModelAttribute @Valid User newUser,
-                                    Errors errors,
-                                    Model model,
-                                    @RequestParam String verifyPassword,
-                                    HttpSession session) {
+    public String processCreateUser(@ModelAttribute @Valid User newUser, Errors errors, Model model,
+                                    @RequestParam String verifyPassword, HttpSession session, RedirectAttributes redirectAttributes) {
         if (errors.hasErrors()) {
             model.addAttribute("title", "Sign Up");
             return "user/create-user";
@@ -71,16 +68,14 @@ public class UserController {
         }
 
         String hashedPassword = BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt());
-
         newUser.setPassword(hashedPassword);
         userDao.save(newUser);
         User currentUser = userDao.findOne(newUser.getId());
-        model.addAttribute("new_user_name", currentUser.getUsername());
-
                 //SESSION CREATION
         session.setAttribute("currentUserObj", currentUser);
 
-        return "user/success-test";
+        redirectAttributes.addFlashAttribute("statusMessage", "You successfully created your new account!");
+        return "redirect:/user/user-profile";
     }
 
     // ----------------- 2. USER MANAGEMENT (UserProfile... ChangeUsername... DeleteUser...) -------------------
@@ -243,14 +238,14 @@ public class UserController {
     // ----------------- 5. DROPBOX STUFF -------------------
 
     //INFO AND TOOLS FOR START AND FINISH METHODS
-    final String APP_KEY = "693ssuwifm7m4dy";
-    final String APP_SECRET = "p77sloa52v6b12x";
-    final String redirectUri = "http://localhost:8080/user/dropbox-auth-finish";
+    private final String APP_KEY = "693ssuwifm7m4dy";
+    private final String APP_SECRET = "p77sloa52v6b12x";
+    private final String redirectUri = "http://localhost:8080/user/dropbox-auth-finish";
 
         //set up the config for the authentication flow
-    DbxRequestConfig dbxRequestConfig = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
-    DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
-    DbxWebAuth auth = new DbxWebAuth(dbxRequestConfig, appInfo);
+    private DbxRequestConfig dbxRequestConfig = DbxRequestConfig.newBuilder("Composer's Project Dashboard/1.0").build();
+    private DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
+    private DbxWebAuth auth = new DbxWebAuth(dbxRequestConfig, appInfo);
 
     @RequestMapping(value = "dropbox-auth-start", method = RequestMethod.POST)
     public String startDbxAuth(HttpSession session) throws IOException {
@@ -288,8 +283,8 @@ public class UserController {
             return "redirect:/user/dropbox-auth-start";
 
         } catch (DbxWebAuth.CsrfException ex) {
-            response.sendError(403, "Forbidden." + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
-            redirectAttributes.addFlashAttribute("statusMessage", "Forbidden." + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
+            response.sendError(403, "Forbidden. " + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "Forbidden. " + "On /dropbox-auth-finish: CSRF mismatch: " + ex.getMessage());
             return "redirect:/user/user-profile";
 
         } catch (DbxWebAuth.NotApprovedException ex) {
@@ -298,13 +293,13 @@ public class UserController {
             return "redirect:/user/user-profile";
 
         } catch (DbxWebAuth.ProviderException ex) {
-            response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
+            response.sendError(503, "Error communicating with Dropbox. " + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
             redirectAttributes.addFlashAttribute("statusMessage", "Error communicating with Dropbox." + "On /dropbox-auth-finish: Auth failed: " + ex.getMessage());
             return "redirect:/user/user-profile";
 
         } catch (DbxException ex) {
-            response.sendError(503, "Error communicating with Dropbox." + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
-            redirectAttributes.addFlashAttribute("statusMessage", "Error communicating with Dropbox." + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
+            response.sendError(503, "Error communicating with Dropbox. " + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("statusMessage", "Error communicating with Dropbox. " + "On /dropbox-auth-finish: Error getting token: " + ex.getMessage());
             return "redirect:/user/user-profile";
         }
 

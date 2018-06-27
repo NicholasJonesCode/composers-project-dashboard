@@ -3,8 +3,8 @@
 
 ### Links
 
-A link to my project planner, to see what I am current doing, and ideas I am proposing:
-https://trello.com/b/3Y4c8e7j/capstone-project-lc101-liftoff-winter2017-spring2018
+A link to my project planner, to see what I am current doing, and maybe even some ideas I am proposing:
+https://trello.com/b/3Y4c8e7j
 
 If you have any questions about this application, or for support, please email:
 nicholasjonescode@gmail.com
@@ -18,7 +18,7 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 * Create, delete, and update profiles for your works
 * A task manager for each project
 * Secure and user-based, with sessions and BCrypt encryption
-* Ability to publish your work as public on a blog for review and comments
+* Ability to publish your work as public on the integrated blog for review and comments
 * File sharing with the Dropbox API
 * Local file attachment, to open project files straight from the manager
 
@@ -34,17 +34,17 @@ Composer's Project Dashboard is a multi-feature, user-based project manager cent
 * REST
 * IntelliJ IDEA (IDE)
 * Dropbox API (Java SDK)
-* Cloud Convert API (using Spring's Rest Template)
+* Cloud Convert API (Http, using Spring's Rest Template)
 * Apache IO utils
-* Pegdown Markdown-to-HTML Java library
+* Pegdown Markdown->HTML conversion Java library
 
 ### What I learned
-* REST services / Using REST APIs, Spring's Rest Template
+* REST services / Using REST APIs, Spring's Rest Template (CloudConcert API)
 * JavaScript (vanilla ES6, mostly)
-* File and local file parsing topics, Java NIO, Apache I/O, Desktop API, File uploads, etc.
+* File and local file parsing topics, Java NIO, Apache I/O, Desktop API, File uploads, File downloads, input/output streams, etc.
 * Spring Security / Basic Encryption
 * Spring Sessions / HTTP sessions
 * Extensive learning of CSS elements, usage, and techniques
-* Extended learning of the technologies learned in LaunchCode's LC101: Java, Spring, Spring JPA, Thymeleaf, CSS...
+* Extended learning of the technologies learned in LaunchCode's LC101: Java, Spring, Hibernate, Thymeleaf, CSS...
 * Creating custom validation annotations like the ones in javax.validation.constraints
 * Using an API SDK and basic OAuth2/Authentication flows (Dropbox's, specifically)

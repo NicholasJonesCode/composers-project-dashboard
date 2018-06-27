@@ -2,7 +2,6 @@ package org.launchcode.projectmanager.models;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.launchcode.projectmanager.UniqueProjectTitle;
 import org.launchcode.projectmanager.models.enums.Mode;
 import org.launchcode.projectmanager.models.enums.MusicKeyType;
 import org.launchcode.projectmanager.models.enums.TimeSignatureDenominator;
@@ -25,7 +24,6 @@ public class Project {
 
     @Size(min = 1, max = 1000)
     @Column(length = 1000)
-    @UniqueProjectTitle
     private String title;
 
     @Size(max = 1000)

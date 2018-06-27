@@ -1,11 +1,13 @@
 package org.launchcode.projectmanager.models.DropboxAPI;
 
+import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.List;
 
 public class DropboxMethods {
 
-    public static boolean folderExists(String pathWithAppFolderAsRoot, DbxClientV2 dbxClient) throws DbxException {
+    public static boolean dbxFolderExists(String pathWithAppFolderAsRoot, DbxClientV2 dbxClient) throws DbxException {
 
         try {
             dbxClient.files().getMetadata(pathWithAppFolderAsRoot);
@@ -32,20 +34,16 @@ public class DropboxMethods {
     }
 
 
-    public static void createProjectFolder(String projectTitle, DbxClientV2 dbxClient) {
+    public static void createProjectFolder(String projectTitle, DbxClientV2 dbxClient) throws DbxException {
 
-        try {
-            dbxClient.files().createFolderV2("/" + projectTitle);
-            System.out.println("Created project folder in app folder: " + projectTitle);
-        } catch (DbxException e) {
-            e.printStackTrace();
-        }
+        dbxClient.files().createFolderV2("/" + projectTitle);
+        System.out.println("Created project folder in Composer's Project Dashboard app folder: " + projectTitle);
     }
 
 
     public static void createProjectFolderIfDoesntExist(String projectTitle, DbxClientV2 dbxClient) throws DbxException {
 
-        if (!folderExists("/" + projectTitle, dbxClient)) {
+        if (!dbxFolderExists("/" + projectTitle, dbxClient)) {
             createProjectFolder(projectTitle, dbxClient);
             System.out.println("Created project folder in app folder: " + projectTitle);
         }
@@ -80,6 +78,23 @@ public class DropboxMethods {
         return files;
     }
 
+    public static List<FileMetadata> getOnlyFilesInProjectFolder(String projectFolder, DbxClientV2 client) throws DbxException {
+
+        return getOnlyFilesInPath("/" + projectFolder, client);
+    }
+
+    public static List<FileMetadata> convertDbxPathLowerStringsListIntoFileMetadataList(List<String> pathLowers, DbxClientV2 clientV2) throws DbxException {
+
+        List<FileMetadata> finalList = new ArrayList<>();
+
+        for (String pathLower : pathLowers) {
+
+            FileMetadata file = (FileMetadata) clientV2.files().getMetadata(pathLower);
+            finalList.add(file);
+        }
+
+        return finalList;
+    }
 
     public static FileMetadata uploadToDropboxPathWithOverwriteMode(Path localFilePath, DbxClientV2 client, String dbxPathAndFilename) throws IOException, DbxException {
 
@@ -106,7 +121,7 @@ public class DropboxMethods {
         List<FileMetadata> files = getOnlyFilesInPath("/" + projectFolder, dbxClient);
 
         for (FileMetadata file : files) {
-            if(localFilePath.toFile().getName() == file.getName()) {
+            if(localFilePath.getFileName().toString().equals(file.getName())) {
                 return true;
             }
         }
@@ -119,6 +134,33 @@ public class DropboxMethods {
         long usedSpace = dbxClient.users().getSpaceUsage().getUsed();
 
         return totalSpace - usedSpace;
+    }
+
+    public static FileMetadata downloadFileFromDropbox(String dirPathToDownloadTo, FileMetadata dbxFileToDownload, DbxClientV2 dbxClient) throws IOException, DbxException {
+
+        File outputFile = new File(dirPathToDownloadTo + File.separator + dbxFileToDownload.getName());
+
+        try (DbxDownloader downloader = dbxClient.files().download(dbxFileToDownload.getPathLower()); FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            Object responseObject = downloader.download(outputStream);
+            System.out.println("The following file was downloaded from dropbox: " + dbxFileToDownload.toStringMultiline() + "\n Of the object type: " + responseObject.getClass().getName());
+
+            return (FileMetadata) responseObject;
+        }
+    }
+
+    public static RelocationResult renameDbxProjectFolder(DbxClientV2 dbxClient, String originalFolderName, String proposedName) throws DbxException {
+
+        return dbxClient.files().moveV2("/" + originalFolderName, "/" + proposedName);
+    }
+
+    public static DeleteResult deleteFileInProjectFolder(DbxClientV2 dbxClient, String projectFolder, String fileName) throws DbxException {
+
+        DeleteResult deleteResult = dbxClient.files().deleteV2("/" + projectFolder + "/" + fileName);
+
+        System.out.printf("The following file was deleted from the project folder '%s'%n", projectFolder);
+        System.out.println(deleteResult.getMetadata().toStringMultiline());
+
+        return deleteResult;
     }
 
 }

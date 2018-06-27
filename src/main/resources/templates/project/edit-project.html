@@ -5,10 +5,14 @@
 
 <body>
 
+<header th:replace="fragments :: header"></header>
+
 <h1 th:text="${title}"></h1>
 
 <div class="edit-form-wrapper">
 <form th:object="${project}" method="post">
+
+    <h4>Note: if you change the title, and you have a Dropbox folder for this project, then your Dropbox folder will also be renamed</h4>
 
     <table>
         <tr>
@@ -16,6 +20,7 @@
             <td>
                 <input type="text"  th:value="${currentProject.title}" name="title" id="title" />
                 <span th:errors="*{title}"></span>
+                <span th:if="${uniqueTitleError}" th:text="${uniqueTitleError}"></span>
             </td>
         </tr>
 

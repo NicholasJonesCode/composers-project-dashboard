@@ -9,6 +9,8 @@
 
 <h2 th:text="${title}"></h2>
 
+<div style="color:red" th:text="${errorMessage}" th:if="${errorMessage}"></div><br/>
+
 <form method="post" th:object="${project}">
 
     <p><div>
