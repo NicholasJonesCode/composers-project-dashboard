@@ -8,7 +8,6 @@ import org.pegdown.PegDownProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.tautua.markdownpapers.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +93,7 @@ public class Tools {
     }
 
 
-    public static String getRemoteReadmeAndConvertToHTMLString() throws IOException, ParseException {
+    public static String getRemoteReadmeAndConvertToHTMLString() throws IOException {
         //grabs raw remote readme into a file and converts locally instead of with CC API
 
         URL url = new URL("https://raw.githubusercontent.com/NicholasJonesCode/composers-project-dashboard/master/README.md");
@@ -111,7 +110,7 @@ public class Tools {
         return result;
     }
 
-    public static String getReadmeHtmlAllMethods() throws IOException, ParseException {
+    public static String getReadmeHtmlAllMethods() throws IOException {
         //This method will try the CloudConvertAPI with the first key, then the second key, then with the local method
 
         String htmlReadmeString;

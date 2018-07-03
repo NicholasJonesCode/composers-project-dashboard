@@ -1,9 +1,8 @@
 # Notes
-(Please note this this copy of the README is different from the P2 LiftOff assignment, as it is more updated)
 
 ### Links
 
-A link to my project planner, to see what I am current doing, and maybe even some ideas I am proposing:
+A link to my planner, to see what I am current doing with this application, and ideas I am proposing:
 https://trello.com/b/3Y4c8e7j
 
 If you have any questions about this application, or for support, please email:
@@ -11,15 +10,18 @@ nicholasjonescode@gmail.com
 
 ### Overview
 
-Composer's Project Dashboard is a multi-feature, user-based project manager centered around musical compositions. 
+A multi-feature, user-based project manager centered around musical compositions. 
+This is a web application designed to help composers manage their projects in a centralized location, 
+both with collaborations and solo projects, and also to receive feedback from other composers.
+The goal is to provide the composer with everything necessary to keep track of their projects with the different features: 
 
 ### Features
 
-* Create, delete, and update profiles for your works
-* A task manager for each project
+* Create, delete, and update profiles with info for your works
+* A task/idea manager for each project
 * Secure and user-based, with sessions and BCrypt encryption
 * Ability to publish your work as public on the integrated blog for review and comments
-* File sharing with the Dropbox API
+* Cloud sharing imported files with the Dropbox API
 * Local file attachment, to open project files straight from the manager
 
 ### Technologies Used

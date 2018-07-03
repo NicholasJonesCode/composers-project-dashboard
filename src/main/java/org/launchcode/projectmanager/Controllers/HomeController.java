@@ -37,7 +37,7 @@ public class HomeController {
 
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String welcome(Model model, HttpSession session) throws IOException, org.tautua.markdownpapers.parser.ParseException {
+    public String welcome(Model model, HttpSession session) throws IOException {
 
         if (session.getAttribute("currentUserObj") == null) {
             model.addAttribute("loggedInUser", "No User signed in yet");
@@ -47,7 +47,7 @@ public class HomeController {
         }
 
         model.addAttribute("date", String.format("Today's date is: %s %d, %d", LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth(), LocalDate.now().getYear())); //Month Day, Year
-        model.addAttribute("title", "Welcome to the Composer's Project Dashboard");
+        model.addAttribute("title", "== Welcome! ==");
         model.addAttribute("readme", Tools.getReadmeHtmlAllMethods());
 
         return "index/welcome";
